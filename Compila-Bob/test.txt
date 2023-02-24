@@ -1,0 +1,10 @@
+compilar_coatl{
+E_ num0;
+E_ num1 : -1;
+ num2 : recibir;
+D_ num3 : 3+5;
+E_ val1 : 4%6;
+valo5 : 6+5+1-2*10 +(3/2);
+num : 3-(45+1)*5;
+
+}ejecutar_coatl

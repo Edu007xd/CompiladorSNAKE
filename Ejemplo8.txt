@@ -1,0 +1,11 @@
+compilar_coatl{
+	#Se declara y asigna la variable "n"
+	E_ n:4.5;
+	#inicio de la estructura ciclica "repito hasta que"
+
+	repito hasta que (n,6.5):{
+		#se aumenta el contador n de forma manual.
+		n: n+1;
+	}
+
+}ejecutar_coatl

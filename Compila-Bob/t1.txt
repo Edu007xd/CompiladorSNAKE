@@ -1,0 +1,16 @@
+compilar_coatl{
+
+	E_ valor1:5;
+	valor2 : 100;
+	repito hasta que(n,var1):{
+		 num : 3-(45+1)*5;
+		muestra("THIS IS MY NIGGA "); 
+	};	
+
+	E_ valor2 : recibir;
+	muestra("ESTE ES EL RESUTADO");
+        muestra( );
+	E_ resultado : valor1+valor2;
+	muestra(resultado+"MI CARA CADENA"+valor2);
+
+}ejecutar_coatl

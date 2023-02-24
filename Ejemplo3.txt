@@ -1,0 +1,6 @@
+compilar_coatl{
+	#Variable del tipo entero declarada sin valor asignado
+	E_ varEnt;
+	#Variable previamente declarada con valor asignado
+	varEnt:45;
+}ejecutar_coatl

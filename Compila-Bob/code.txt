@@ -1,0 +1,13 @@
+compilar_coatl{
+ 
+	E_ n: 5;
+	n:"hola";
+	E_ n:6;
+	D_ dcimal : 5.4;
+	n : dcimal; 
+	x : 3;
+	C_ cadena : "onon$";
+	cadena : 0;
+}ejecutar_coatl
+
+ 

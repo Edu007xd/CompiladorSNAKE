@@ -1,0 +1,7 @@
+compilar_coatl{
+	E_ valor1:5;
+	#se ingresa un valor para sumar con el número 5
+	E_ valor2: 0;
+	#suma
+	E_ resultado valor1+valor2;
+}ejecutar_coatl

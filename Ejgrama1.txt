@@ -1,0 +1,13 @@
+compilar_coatl{
+	E_ valor1 : 5 ;
+	
+	E_ valor2 : recibir;
+	
+	E_ resultado : valor1+valor2;
+	valor1 : 12 - valor2;
+	repito hasta que (n,6.5):{
+		
+		n: n+1;
+	}
+
+}ejecutar_coatl

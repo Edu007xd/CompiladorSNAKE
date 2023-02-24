@@ -1,0 +1,29 @@
+compilar_coatl{
+
+E_ n1: recibir;
+E_ n2: recibir;
+E_ mayor;
+E_ menor;
+
+E_ contador;
+decide (n1>n2):{
+mayor: n1;
+menor: n2;
+} sino{
+mayor: n2;
+menor: n1;
+};
+
+contador: 0;
+repito hasta que (contador, 3):{
+muestra("Numero mayor: "+mayor);
+contador: contador + 1;
+};
+
+contador: 0;
+repito hasta que (contador, 2):{
+muestra("Numero menor: "+menor);
+contador: contador + 1;
+};
+
+}ejecutar_coatl

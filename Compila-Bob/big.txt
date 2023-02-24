@@ -1,0 +1,54 @@
+compilar_coatl{
+	E_ num0;
+E_ num1 : -1;
+ num2 : recibir;
+D_ num3 : 3+5;
+E_ val1 : 4%6;
+valo5 : 6+5+1-2*10 +(3/2);
+num : 3-(45+1)*5;
+C_ cadena : "HOLA"+"SOY"+nombre1;
+cadena : "No soy";
+	muestra(cadena);
+	#Se declara y asigna la variable "n"
+	E_ n: 45;
+	#inicio de la estructura ciclica "repito-mientras"
+	E_ valor1:5;
+	#(n,var1):{
+	#	 num : 3-(45+1)*5;
+	#	muestra("THIS IS MY NIGGA ");
+	#};
+
+	E_ valor2 : recibir;
+	muestra("ESTE ES EL RESUTADO");
+        muestra( );
+	E_ resultado : valor1+valor2;
+	muestra(resultado+"MI CARA CADENA"+valor2);
+	repito : {
+		#código a ejecutar a ejecutar en caso de que la condición sea VERDAD
+		#se aumenta el contador n de forma manual.
+		n: n+1;
+		muestra("MI CARA");
+		decide (num != varEnt | num1) : {
+			repito :{
+ 
+			}mientras("NOSOY" = nom1|num2);
+		}
+	}mientras(n < 45|num2); 
+ 
+	#Se declara y asigna la variable "n"
+	E_ n:45;
+	#inicio de la estructura ciclica "repito-mientras"
+
+	repito  {
+		#código a ejecutar a ejecutar en caso de que la condición sea VERDAD
+		#se aumenta el contador n de forma manual.
+		n: n+1;
+		muestra("MI CARA")
+		decide (num != varEnt | num1) : {
+			repito : {
+ 
+			}mientras(n < 45|num2);
+		}
+	}mientras(n < 45|num2); 
+	
+}ejecutar_coatl

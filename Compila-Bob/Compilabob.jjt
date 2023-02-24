@@ -1,0 +1,593 @@
+options { 
+    MULTI=true;
+	JAVA_UNICODE_ESCAPE = true; 
+	KEEP_LINE_COLUMN = true; 
+	STATIC = false; 
+} 
+/*
+
+
+jjtree Compilabob.jjt
+javacc Compilabob.jj
+javac *.java
+java Compilabob < Ejemplo7.txt
+java Compilabob < t1.txt
+----------------------------------------------------------------  NOTA --------------------------------------------------------------------------
+---------------------------------------------------------- MÉTODOS POR AGREGAR --------------------------------------------------------------------
+
+Método de error "=" en lugar de ":" para las asignaciones.
+Resolver el break de estructuras por el método SKIP
+		Quizás funcione ampliando el rango de error hasta llaves de abertura y cierre junto a los punto y coma.
+
+*/
+
+PARSER_BEGIN(Compilabob) 
+
+import java.util.*;
+import java.io.*;
+public class Compilabob {  
+	String errormsg="",datos = "";
+	static  String expresion =" "; 
+	int sentencias_inco =0;  
+	//variebales para semantica-------------------------------
+    String Type="", Valor=""; //variables cache para capturar el par
+    String lugar = "";
+	Token var;
+    //--------------------------------------------------------
+	public static void main(String args[])  { 
+		Compilabob compilador = new Compilabob(System.in); 
+		try { 
+			SimpleNode e = compilador.Codigo();
+			e.dump(">"); 
+		}catch(ParseException pe){
+            pe.printStackTrace();
+        }
+        catch( Exception e ){   
+			System.out.println("\nEXCEPTION e MAIN\n" +"Sentencias incorrectas encontradas: "+compilador.sentencias_inco);
+		}
+		catch( TokenMgrError e ) { 
+			System.out.println( "Error de Token" );
+		} 
+		if(compilador.errormsg == "\n" && compilador.sentencias_inco == 0){
+			System.out.println("An"+"\u00e1"+"lisis l"+"\u00e9"+"xico y sint"+"\u00e1"+"ctico ejecutados con "+"\u00e9"+"xito");
+		}else{
+			System.out.println(compilador.errormsg);
+		}
+		System.out.println("FINAL PRINT\n" +"Sentencias incorrectas encontradas: "+compilador.sentencias_inco);
+		System.out.println("----- Pila Semantica ----"+ ClaseSemantica.tabla);
+		System.out.println("EXPRESION ----- : "+expresion);
+	} 
+    // {jjtThis.setImage(t.image);}
+	
+	
+}   
+
+PARSER_END(Compilabob)   
+  
+SKIP :   
+{  
+	< " " | "\t" | "\r" | "\n" | "\r\n" >  //White space 1
+	| <"#" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >  //Single-line comments 2
+	| <"##"(~["/"])*  "#""#" >  //Multi-line comments  3 ---- 
+}
+
+TOKEN:   
+{   
+<INICIO: "compilar_coatl">  //4
+|<FIN: "ejecutar_coatl">  //5
+|<IF: "decide">   //6
+|<ELSE: "sino">   //7
+|<CicloIterado: "repito hasta que">  //8
+|<CicloLimit: "repito"> //9
+|<CicloWhile: "mientras">  //10
+|<ESCRIBIR: "muestra">//11
+|<LEER:"recibir">//12
+}  
+
+TOKEN:   
+{   
+<ParenIzq: "(">  //13 - 
+|<ParenDer: ")"> //14
+|<SepIzq: "{">  //15
+|<SepDer: "}" >  //16 
+|<PuntoComa: ";"> //17
+|<COMA: ",">  //18
+}  
+
+TOKEN:  
+{  
+<ASIGNACION: ":"> //19
+|<MENOR: "<">  //20
+|<MAYOR: ">"> //21
+|<MENOR_IGUAL: "<=">//22
+|<MAYOR_IGUAL: ">="> //23
+|<IGUALDAD: "="> //24
+|<OR: "|">  //25
+|<AND: "&"> //26
+|<NOTEQ: "!="> //27
+|<NOT: "!"> //28
+|<MAS: "+"> //29
+|<MENOS: "-"> //30
+|<DIV: "/"> //31
+|<MODULO: "%"> //32
+|<MULTI: "*"> //33
+}   
+// [("E_")(["a"-"z"|"A"-"Z"|"_"|"0"-"9"])+]  
+//"E_"(["A"-"Z","a"-"z"](["A"-"Z","a"-"z","0"-"9"])*)  
+// NOT ~ 
+
+//<CADENAS: ("\""(~["\"","#","\n","\r","#","#","\r","\n"])*"\"")>//31
+//Token t = getToken();
+	//expresion = expresion + t.image;
+
+TOKEN: 
+{ 
+<ENTERO: "E_">//34
+|<FLOTANTE: "D_">//35
+|<ID_CADENA: "C_">//36
+|<BOOLEANO: "L_">//37
+|<NUMERO: (["0"-"9"])+>//38
+|<NUMDECIMAL: (["0"-"9"])+ "." (["0"-"9"])+ | (["0"-"9"])+ "." | "." (["0"-"9"])+>//39
+|<CADENAS: ("\""(~["\"","#","\n","\r","#","#","\r","\n"])*"\"")>//40
+|<EST_LOGIC:("falso"|"verdad")>//41
+}   
+
+TOKEN: 
+{
+	<IDENTIFICADOR:["A"-"Z","a"-"z"](["A"-"Z","a"-"z","0"-"9"])*>//42
+
+}
+
+TOKEN: 
+{ 
+	<UNKNOW : ~[]> //43
+}
+
+
+
+//------------------------------- ANÁLISIS SINTACTICO - AREA DE GRAMATICAS ----------------------------------------------------
+
+// Gramatica inicial que contiene el cuerpo basico del codigo
+SimpleNode Codigo():
+{	//Se inicializa 
+	ClaseSemantica.SetTables();	
+} 
+{
+	((<INICIO> |ErrorNoinicio())(<SepIzq> |ErrorNoSepINICIO())) 
+	Cuerpo() 
+	((<SepDer>|ErrorNoSepFINAL())(<FIN>|ErrorNOFIN()))<EOF> {return jjtThis;}
+} 
+
+// método cuerpo, lee un conjunto de sentencias tamaño n
+void Cuerpo():{} 
+{ 
+(sentencias())* 
+} 
+
+// metodo sentencias, lee todas las gramaticas que pueden ser reconocidas por el compilador
+void sentencias():{} 
+{ 
+try {
+(LOOKAHEAD(2) 
+ // PuntoComa toen separado debido a la variabilidad del codigo
+Declaracion()   // Declaracion de Variables k
+|( Asignacion()( <PuntoComa>|errorFinlinea())) //Asignacion de valores 
+| Ciclo_RepitoHastaQue() 
+| Ciclo_RepitoMientras()
+| Decide()
+| Muestra()
+| error()
+| errorDOBLElinea()
+  )
+}
+catch (ParseException e) {
+	System.out.println(e.toString());  //imprime el mensaje de error
+    error_skipto(PuntoComa, FIN, EOF);
+  } 
+
+}
+
+void Muestra():{}
+{
+
+	<ESCRIBIR> <ParenIzq>  Mensaje()   <ParenDer> (<PuntoComa>|errorFinlinea())
+}
+
+void Mensaje():{}{
+
+	Concatenacion() | {}
+}
+
+void Concatenacion():{}{
+
+  ( LOOKAHEAD(2)
+  	(Variable_IDEN()|<CADENAS>) <MAS> Concatenacion() | (Variable_IDEN()|<CADENAS>)) 
+}
+
+//----------------------------------------------------------------------------------------------
+//########  DECIDE IF-ELSE ##########
+void Decide():{}
+{
+IF() ( 
+	LOOKAHEAD(2)
+	ELSE()|{})
+
+}
+void IF():{ }
+{
+	<IF> <ParenIzq> OpComparacion() <ParenDer>  <ASIGNACION>  <SepIzq>
+	(	 
+	sentencias() )*
+	<SepDer>
+}
+
+void ELSE():{}
+{
+	<ELSE> <SepIzq> 
+	(	 
+	sentencias() )*<SepDer> (<PuntoComa>|errorFinlinea())
+}
+
+
+// ############## CICLOS #############
+//----------------------------------------------------------------------------------------------------------------------
+
+//No es necesario aqui agregar un jjtThis.setName(t.image);
+//debido a que solo necesitamos el nombre de la sentencia y esa se nos da automaticamente
+// En cambio, solo necesitamos describir la condicion en el arbol de expresiones
+//Para esto dividi aún mas la gramatica para agregar los elementos de la condición
+//
+void Ciclo_RepitoHastaQue():{}
+{
+	 <CicloIterado>   <ParenIzq> Condicion_RepitoHQ() <ParenDer> <ASIGNACION> 
+	<SepIzq> (sentencias())* <SepDer> (<PuntoComa>|errorFinlinea())
+}
+
+//Aqui en la condicional necesitamos describir en su propia clase los lexemas de los tokens
+
+//	Dividi la condicion asi para:
+//		* Obtener el nombre de la gramatica como un subnodo, y que se imprima en el arbol
+//		* Darles a los nodos hijos de la condicion (inicio y limitefinal) su propia gramatica
+//		* Ya no necesito usar Token t; para el ---> jjtThis.setName(t.image);
+//		* Ya lo hara automaticamente las gramaticas auxiliares
+void Condicion_RepitoHQ():{}{
+ Condi_inicio() <COMA> Condi_limite() 
+}
+
+
+void Condi_inicio():{}{
+Variable_IDEN()
+
+}
+
+void Condi_limite():{}{
+	(Variable_IDEN()|DataType())
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+ void Ciclo_RepitoMientras():{}
+{
+	<CicloLimit> <ASIGNACION> <SepIzq> 
+	(sentencias())* 
+	<SepDer> <CicloWhile> <ParenIzq> OpComparacion() <ParenDer> (<PuntoComa>|errorFinlinea())
+} 
+
+//----------------------------------------------------------------------------------------------------------------------
+// DECLARACION DE VARIABLES 
+void Declaracion():
+{   
+	//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
+	int td;
+}
+{ 
+	//Cada que el analizador encuentre una declaración, va a tomar su id y el token de su IDENTIFICADOR ej. num1, nombre_usuario
+  Variable_dato(){
+
+	//Se declara la variable t para manejar los objetos token
+    Token t ;
+
+	//Cuando se lee un token, se almacena su id dentro de td
+	td = token.kind;
+  } 
+
+//El token identificador (objeto tipo token), es almacenado dentro de t. Ya con esto dentro de una clase hijo de SimpleNode,
+// se asigna el nombre de la variable dentro de un objeto para ser impresa en el árbol
+  t = <IDENTIFICADOR> 
+   {
+	
+	// Aqui el string del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
+   // la gramatica mas el prefijo AST: ASTDeclaracion.java <---- Aqui se crearan pequeños metodos para realizar la asignación
+	jjtThis.setName(t.image);
+	
+	//Esta variable es para el proceso del analizador semantico, aun no es importante
+	var = t;
+
+   //******************COMENTARIOS PARA LA FASE SEMANTICA, AÚN NO ES IMPORTANTE*********************
+	//Manda a llamar la clase semantica y su metodo para comprobar esto 
+	//Retornara un string vacio o un null
+	if(ClaseSemantica.checkVariable(var).equals("")){
+
+		//Si se retorna un string vacio entonces ya ha sido declarada la variable
+		errormsg = errormsg+"Error semantico en la linea " +var.beginLine +", columna "+var.beginColumn +", la variable "+ var.image + " ya  ha sido declarada \r\n";
+		
+		//Se suma la cantidad de sentencias incorrectas
+		sentencias_inco++;
+	}else{
+
+		//Si no existe error alguno, entonces se insertan en la tabla
+		ClaseSemantica.InsertarSimbolo(var,td);
+	}
+  }
+
+//No es importante mostrar en el arbol los lexemas : asignacion (":") ni el puntocoma
+// ya que solo son parte de la sintaxis general y no son un bloque muy importante para el peldaño
+//en los arboles sintacticos son importantes los operadores, las variables, los valores de las variables y las reserved keys
+// esto se pueden pasar de largo
+  ((<ASIGNACION>  AsignacionD())|{}) (<PuntoComa> |errorFinlinea())
+} 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// ASIGNACION DE VALORES DESPUES DE UNA DECLARACION
+
+void AsignacionD():{} 
+{  
+	( LEER() | Expresion() )
+} 
+
+
+// ASIGNACION GENERAL DE VALORES A UNA VARIABLE
+void Asignacion():
+{ //Declaracion de variables Token
+// t es para el arbol
+// t2 es usado para el analizador semantico
+	Token t, t2;
+}
+{  //Asignamos el valor del identificador de la variable en la clase ASTAsignacion
+//  para que el arbol sea mostrado de la siguiente forma :
+//		 "Asignacion para el identificador: " + this.name
+	t = <IDENTIFICADOR>{ 
+		jjtThis.setName(t.image);
+		
+		//Ya lo que sigue despues es para el analizador semantico
+		//Apartado del analizador semantico
+		var = t;
+		//Aqui se intenta buscar algo parecido: Se determina si la variable existe o ha sido declarada
+		// Si no existe, entonces retornara un mensaje de error anunciando eso
+		//Y ese mensaje se sumara a todos los mensajes de error existentes
+	if(!(ClaseSemantica.checkVariable(var).equals(""))){
+		errormsg = errormsg+ClaseSemantica.checkVariable(var);
+		sentencias_inco++;
+	}//Si no hay error, entonces se sigue de largo
+  }  <ASIGNACION>
+	( LEER() | Expresion()) {
+
+		/*if(t2.kind != LEER){
+			Expresiones.Convierte(expresion);
+		} */
+		t2 = token;
+		//
+		if(!(ClaseSemantica.checkAsing(var,t2).equals(" "))){
+			errormsg = errormsg+ClaseSemantica.checkAsing(var,t2);
+			sentencias_inco++;
+		}
+		expresion = " ";
+	}
+} 
+//---------------------------------------------------------------------------
+
+
+//###### GRAMATICA PARA EXPRESIONES MATEMATICAS DESPUES DE UNA ASIGNACION O DECLARACION
+
+//Lo importante a mostrar  dentro de esta  seccion de gramaticas seran los operadores que puedan surgir (+,-,*,/,%)
+// Y se mostraran justo debajo de la estructura de las expresiones
+void Expresion():{} 
+{   
+	Termino() ( Mas_menos() Termino())*
+} 
+
+
+
+void Termino():{}
+{  
+	Factor() ( MDM() Factor())*
+}
+
+void Factor():{}
+{
+	( Menoss() Factor() ) | Primario()
+ 
+}
+
+void Primario():{}
+{
+	((<ParenIzq>	Expresion() <ParenDer>)  | DataType() | Variable_IDEN())
+}
+
+//--------------------OPERAdores----------------------
+//TODOS ESTOS TIENEN EN SUS CLASES  LA MISMA EXTRUCTURA PARA SER MOSTRADA EN EL ARBOL:
+//		"Operador matematico: " + this.name
+
+void Mas_menos():{Token t;} 
+{
+	(t = <MAS>{jjtThis.setName(t.image);} | t = <MENOS> {jjtThis.setName(t.image);} )
+}
+
+void Menoss():{Token t;}
+{
+	t = <MENOS> {jjtThis.setName(t.image);}
+}
+
+void MDM(): {Token t;}
+{
+(t = <MULTI>{jjtThis.setName(t.image);}|t = <DIV>{jjtThis.setName(t.image);}|t = <MODULO>{jjtThis.setName(t.image);})
+}
+
+
+// ############## OPERACIONES DE COMPARACION PARA IF O CICLOS  ####################
+void OpComparacion():{}{
+		( FactorL() | FactorR() )
+}
+
+void FactorL():{}
+{
+	DataType()  Comparadores()  ( DataType() | Variable_IDEN() )
+}
+
+void FactorR():{}
+{
+	Variable_IDEN()  Comparadores()  ( DataType() | Variable_IDEN() )
+}
+
+
+/* NO ME GUSTÓ AL FINAL ESTA GRAMATICA, IGNORAR
+void ExpresionL():{} 
+{   LOOKAHEAD(2) 
+	(  FactorL() Logicos() ExpresionL()  ) 
+	  
+	|  FactorL()
+} */
+
+
+
+ 
+
+
+
+
+//usar .bat para borrar archivos
+
+//---------------- GRAMATICAS AUXILIARES ----------------------------
+//Para cuando se necesite usar lexemas y no consumir la gramatica
+void Variable_IDEN():{Token t;}{
+	t = <IDENTIFICADOR> {jjtThis.setName(t.image);}
+}
+
+// DATOS Y OPERADORES USADOS EN SENTENCIAS
+void DataType():{Token t;} 
+{ //Tipos de datos  
+	 
+(t = <NUMERO> {jjtThis.setName(t.image);} |t = <NUMDECIMAL>{jjtThis.setName(t.image);}  | t = <EST_LOGIC>{jjtThis.setName(t.image);}  | t = <CADENAS> {jjtThis.setName(t.image);} )
+} 
+void Comparadores():{}
+{
+ <MENOR>   
+|<MAYOR> 
+|<MENOR_IGUAL>  
+|<MAYOR_IGUAL>  
+|<IGUALDAD> 
+|<NOTEQ> 
+}
+
+void LEER():{ Token t;} 
+{   
+	t = <LEER> {jjtThis.setName(t.image);} 
+} 
+
+void Variable_dato():{Token t5;} 
+{ //Tipo del dato de la variable del dato a la hora de su declaracion
+	LOOKAHEAD(3) 
+t5= <ENTERO>   {jjtThis.setName(t5.image);}
+|t5=<FLOTANTE>   {jjtThis.setName(t5.image);}
+|t5=<ID_CADENA> {jjtThis.setName(t5.image);}
+|t5=<BOOLEANO>  {jjtThis.setName(t5.image);}
+} 
+
+void Logicos():{}
+{
+  <OR>  
+ |<AND>  
+}
+
+
+void Operadores():{} 
+{ //Operadores para expresiones matematicas
+	LOOKAHEAD(3)
+ <MAS> 
+|<MENOS>  
+|<DIV> 
+|<MODULO>   
+|<MULTI>   
+} 
+
+
+
+
+// ---------------------------------------- TRATAMIENTO DE ERRORES --------------------------------------------------------
+JAVACODE
+void error_skipto(int puntocoma, int fincode, int finfile) {
+  Token t;
+  sentencias_inco++;
+  // consume tokens all the way up to a token of "kind" - use a do-while loop
+  // rather than a while because the current token is the one immediately before
+  // the erroneous token (in our case the token immediately before what should
+  // have been "if"/"while".
+  do {
+    t = getNextToken();
+  }
+  while ( (t.kind !=puntocoma)&&(t.kind !=fincode)&&(t.kind !=finfile));
+}
+
+void error():  
+{
+	String errores = " "; 
+	Token t;
+} 
+{  
+	t = <UNKNOW> 
+{ 
+	errores = "Simbolo: " + t.image + " no reconocido en la línea "+String.valueOf(t.beginLine)+" columna "+String.valueOf(t.endColumn)+"\r\n"; 
+	errormsg = errormsg+errores; 
+	sentencias_inco++;
+} 
+}
+
+ 
+void errorFinlinea():{
+	sentencias_inco++;
+	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+(token.endColumn+1)+" falta ';'");
+}{
+	 
+	{} 
+	 
+}
+void errorDOBLElinea():{
+	sentencias_inco++;
+	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+(token.endColumn+1)+" hay mas de un ';'  ");
+}{
+	 
+	 <PuntoComa>  
+}
+
+
+//GRAMATICAS DE ERROR PARA LA ESTRUCTURA DEL CODIGO COATL
+
+void ErrorNoinicio():{
+	sentencias_inco++;
+	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+getToken(1).beginLine+" Columna: "+getToken(1).endColumn+": No hay palabra de arranque \"compilar_coatl\" ");
+}{
+	 
+	  {} 
+}
+
+void ErrorNoSepINICIO():{
+	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+getToken(1).beginLine+" Columna: "+getToken(1).beginColumn+" No hay llave izquierda \"{\" ");
+	sentencias_inco++;
+}{
+	 
+	  {} 
+}
+void ErrorNoSepFINAL():{
+	sentencias_inco++;
+	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+token.beginColumn+": No hay llave derecha \"}\"");
+}{
+	 
+	  {} 
+}
+void ErrorNOFIN():{
+	sentencias_inco++;
+	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+token.beginColumn+" No hay palabra de cierre\"ejecutar_coatl\"" );
+}{
+	 
+	  {} 
+}

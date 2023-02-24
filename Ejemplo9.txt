@@ -1,0 +1,13 @@
+compilar_coatl{
+        E_ valrr : 1;	#<-----ERRROR FALTA ;
+        #Se declara y asigna la variable "n"
+	muestra("fdfd");
+	
+	 
+	repito : {
+		 
+		n: n+1;             
+		muestra("MI CARA"); #<-----ERRROR FALTA ;
+
+	}mientras(n < 45|num2);  
+}ejecutar_coatl
