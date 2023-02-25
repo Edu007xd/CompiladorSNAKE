@@ -592,8 +592,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     }
   }
 
-//Aqui en la condicional necesitamos describir en su propia clase los lexemas de los tokens
-
+//Aqui en la condicion necesitamos describir en su propia clase los lexemas de los tokens
 //	Dividi la condicion asi para:
 //		* Obtener el nombre de la gramatica como un subnodo, y que se imprima en el arbol
 //		* Darles a los nodos hijos de la condicion (inicio y limitefinal) su propia gramatica
@@ -766,31 +765,39 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   }
 
 //----------------------------------------------------------------------------------------------------------------------
-// DECLARACION DE VARIABLES 
+// DECLARACION DE VARIABLES //
+//----------------------------------------------------------------------------------------------------------------------
   final public void Declaracion() throws ParseException {
  /*@bgen(jjtree) Declaracion */
         ASTDeclaracion jjtn000 = new ASTDeclaracion(JJTDECLARACION);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
+        jjtree.openNodeScope(jjtn000);//ANALIZADOR SEMANTICO, AUN NO
+//*********************************
+        //Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
         int td;
     try {
       Variable_dato();
-        //Se declara la variable t para manejar los objetos token
-    Token t ;
+        //Se declara la variable t para manejar los objetos token (lexemas)
+    Token t;
 
+        //NO ES IMPORTANTE, ES PARA EL ANALIZADOR SEMANTICO
         //Cuando se lee un token, se almacena su id dentro de td
+        //token.kind nos retorna el id del lexema en la tabla de simbolos
         td = token.kind;
-      //El token identificador (objeto tipo token), es almacenado dentro de t. Ya con esto dentro de una clase hijo de SimpleNode,
-      // se asigna el nombre de la variable dentro de un objeto para ser impresa en el árbol
+      //ARBOL SINTACTICO
+      //El token identificado (objeto tipo token), es almacenado dentro de t. Ya tenemos los datos dentro del lexema
+      // se asigna el nombre de la variable (el lexema, en este caso <IDENTIFICADOR>) 
+      //dentro de un objeto Token para ser impresO en el árbol en la siguiente linea 
         t = jj_consume_token(IDENTIFICADOR);
         // Aqui el string del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
-   // la gramatica mas el prefijo AST: ASTDeclaracion.java <---- Aqui se crearan pequeños metodos para realizar la asignación
+   // la gramatica mas el prefijo 'AST': ASTDeclaracion.java <---- Aqui se crearan pequeños metodos para realizar la asignación
+   //Es importante crear estos metodos porque, por si mismo no existe el metodo .setName(), este debe ser creado manualmente
         jjtn000.setName(t.image);
 
         //Esta variable es para el proceso del analizador semantico, aun no es importante
         var = t;
 
-   //******************COMENTARIOS PARA LA FASE SEMANTICA, AÚN NO ES IMPORTANTE*********************
+   //******************COMENTARIOS PARA el analizador SEMANTICo, AÚN NO ES IMPORTANTE*********************
         //Manda a llamar la clase semantica y su metodo para comprobar esto 
         //Retornara un string vacio o un null
         if(ClaseSemantica.checkVariable(var).equals("")){
@@ -846,6 +853,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
 //----------------------------------------------------------------------------------------------------------------------
 
 // ASIGNACION DE VALORES DESPUES DE UNA DECLARACION
+//ESTRUCTURA BASICA DE LA GRAMATICA
+//esto es la base 
   final public void AsignacionD() throws ParseException {
                     /*@bgen(jjtree) AsignacionD */
   ASTAsignacionD jjtn000 = new ASTAsignacionD(JJTASIGNACIOND);
@@ -1425,21 +1434,21 @@ void ExpresionL():{}
         break;
       case NUMDECIMAL:
         t = jj_consume_token(NUMDECIMAL);
-                                                             jjtree.closeNodeScope(jjtn000, true);
-                                                             jjtc000 = false;
-                                                            jjtn000.setName(t.image);
+                                                              jjtree.closeNodeScope(jjtn000, true);
+                                                              jjtc000 = false;
+                                                             jjtn000.setName(t.image);
         break;
       case EST_LOGIC:
         t = jj_consume_token(EST_LOGIC);
-                                                                                                           jjtree.closeNodeScope(jjtn000, true);
-                                                                                                           jjtc000 = false;
-                                                                                                          jjtn000.setName(t.image);
+                                                                                                            jjtree.closeNodeScope(jjtn000, true);
+                                                                                                            jjtc000 = false;
+                                                                                                           jjtn000.setName(t.image);
         break;
       case CADENAS:
         t = jj_consume_token(CADENAS);
-                                                                                                                                                        jjtree.closeNodeScope(jjtn000, true);
-                                                                                                                                                        jjtc000 = false;
-                                                                                                                                                       jjtn000.setName(t.image);
+                                                                                                                                                         jjtree.closeNodeScope(jjtn000, true);
+                                                                                                                                                         jjtc000 = false;
+                                                                                                                                                        jjtn000.setName(t.image);
         break;
       default:
         jj_la1[33] = jj_gen;
@@ -1789,6 +1798,33 @@ try {Token t;
     finally { jj_save(4, xla); }
   }
 
+  private boolean jj_3R_8() {
+    if (jj_3R_11()) return true;
+    if (jj_scan_token(IDENTIFICADOR)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_10() {
+    if (jj_scan_token(ELSE)) return true;
+    if (jj_scan_token(SepIzq)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_9() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
   private boolean jj_3R_11() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1810,11 +1846,6 @@ try {Token t;
     return false;
   }
 
-  private boolean jj_3_3() {
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
   private boolean jj_3R_15() {
     if (jj_scan_token(BOOLEANO)) return true;
     return false;
@@ -1822,11 +1853,6 @@ try {Token t;
 
   private boolean jj_3R_12() {
     if (jj_scan_token(IDENTIFICADOR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_8()) return true;
     return false;
   }
 
@@ -1840,28 +1866,6 @@ try {Token t;
     return false;
   }
 
-  private boolean jj_3R_8() {
-    if (jj_3R_11()) return true;
-    if (jj_scan_token(IDENTIFICADOR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_scan_token(MAS)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_9() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_10() {
-    if (jj_scan_token(ELSE)) return true;
-    if (jj_scan_token(SepIzq)) return true;
-    return false;
-  }
-
   private boolean jj_3_2() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1869,6 +1873,11 @@ try {Token t;
     jj_scanpos = xsp;
     if (jj_scan_token(40)) return true;
     }
+    if (jj_scan_token(MAS)) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
     if (jj_scan_token(MAS)) return true;
     return false;
   }

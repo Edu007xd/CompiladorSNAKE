@@ -5,21 +5,44 @@
 	KEEP_LINE_COLUMN = true; 
 	STATIC = false; 
 } 
+
 /*
+Muestra - mensaje - concatenacion (Salamanca)
+LOGICOS (eduardo)
+comparadores (gussher)
+
+PASOS A REALIZAR PARA AGREGAR LOS NODOS AL ARBOL
+
+1-  HACER LOS CAMBIOS EN Compilabob.jjt dentro de cada gramatica
+		Token t; ---->    t = <LEXEMA>  ----> jjtThis.setName(t.image);
+2-  EJECUTAR EL COMANDO jjtree Compilabob.jjt para obtener las clases de cada nodo:
+		 ej. ASTVariable_dato.java
+3-	Hacer los cambios en el programa, como crear el metodo SetName(String value)
+
+4-	Ejecutar los otros comandos en busca de posibles errores
 
 
+
+**COMANDOS
 jjtree Compilabob.jjt
 javacc Compilabob.jj
-javac *.java
+
+** este compila los archivos java generados en busca de errores
+javac *.java 
+** los codigos con el lenguaje creado a ser analizados
 java Compilabob < Ejemplo7.txt
 java Compilabob < t1.txt
+
+
+
+
+
 ----------------------------------------------------------------  NOTA --------------------------------------------------------------------------
 ---------------------------------------------------------- M\u00c3\u2030TODOS POR AGREGAR --------------------------------------------------------------------
 
 M\u00c3\u00a9todo de error "=" en lugar de ":" para las asignaciones.
 Resolver el break de estructuras por el m\u00c3\u00a9todo SKIP
 		Quiz\u00c3\u00a1s funcione ampliando el rango de error hasta llaves de abertura y cierre junto a los punto y coma.
-
 */
 
 PARSER_BEGIN(Compilabob) 
@@ -148,7 +171,7 @@ TOKEN:
 }
 
 
-
+ 
 //------------------------------- AN\u00c3\ufffdLISIS SINTACTICO - AREA DE GRAMATICAS ----------------------------------------------------
 
 // Gramatica inicial que contiene el cuerpo basico del codigo
@@ -274,6 +297,7 @@ catch (ParseException e) {
 
 }
 
+
 void Muestra():{/*@bgen(jjtree) Muestra */
   ASTMuestra jjtn000 = new ASTMuestra(JJTMUESTRA);
   boolean jjtc000 = true;
@@ -349,9 +373,10 @@ void Concatenacion():{/*@bgen(jjtree) Concatenacion */
 /*@egen*/}{/*@bgen(jjtree) Concatenacion */
   try {
 /*@egen*/
-
+// Crear una variable auxiliar como Variable_IDEN() para <cadenas> y <mas>, 
+// tambien alterar las clases que se generen
   ( LOOKAHEAD(2)
-  	(Variable_IDEN()|<CADENAS>) <MAS> Concatenacion() | (Variable_IDEN()|<CADENAS>))/*@bgen(jjtree)*/
+  	( (Variable_IDEN()|<CADENAS>) <MAS>  Concatenacion() ) | (Variable_IDEN()|<CADENAS>))/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -372,7 +397,11 @@ void Concatenacion():{/*@bgen(jjtree) Concatenacion */
     }
   }
 /*@egen*/ 
-}
+} 
+
+
+
+
 
 //----------------------------------------------------------------------------------------------
 //########  DECIDE IF-ELSE ##########
@@ -522,8 +551,7 @@ void Ciclo_RepitoHastaQue():{/*@bgen(jjtree) Ciclo_RepitoHastaQue */
 /*@egen*/
 }
 
-//Aqui en la condicional necesitamos describir en su propia clase los lexemas de los tokens
-
+//Aqui en la condicion necesitamos describir en su propia clase los lexemas de los tokens
 //	Dividi la condicion asi para:
 //		* Obtener el nombre de la gramatica como un subnodo, y que se imprima en el arbol
 //		* Darles a los nodos hijos de la condicion (inicio y limitefinal) su propia gramatica
@@ -567,6 +595,7 @@ void Condi_inicio():{/*@bgen(jjtree) Condi_inicio */
 /*@egen*/}{/*@bgen(jjtree) Condi_inicio */
 try {
 /*@egen*/
+
 Variable_IDEN()/*@bgen(jjtree)*/
 } catch (Throwable jjte000) {
   if (jjtc000) {
@@ -598,6 +627,7 @@ void Condi_limite():{/*@bgen(jjtree) Condi_limite */
 /*@egen*/}{/*@bgen(jjtree) Condi_limite */
         try {
 /*@egen*/
+
 	(Variable_IDEN()|DataType())/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -619,6 +649,7 @@ void Condi_limite():{/*@bgen(jjtree) Condi_limite */
           }
         }
 /*@egen*/
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -656,42 +687,49 @@ void Condi_limite():{/*@bgen(jjtree) Condi_limite */
 } 
 
 //----------------------------------------------------------------------------------------------------------------------
-// DECLARACION DE VARIABLES 
+// DECLARACION DE VARIABLES //
+//----------------------------------------------------------------------------------------------------------------------
 void Declaracion():
 {/*@bgen(jjtree) Declaracion */
         ASTDeclaracion jjtn000 = new ASTDeclaracion(JJTDECLARACION);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
-/*@egen*/   
+/*@egen*/   //ANALIZADOR SEMANTICO, AUN NO
+//*********************************
 	//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
 	int td;
 }
 {/*@bgen(jjtree) Declaracion */
   try {
-/*@egen*/ 
-	//Cada que el analizador encuentre una declaraci\u00c3\u00b3n, va a tomar su id y el token de su IDENTIFICADOR ej. num1, nombre_usuario
+/*@egen*/ 	//COMENTARIOS PARA EL ARBOL SINTACTICO
+	//Cada que el analizador encuentre una SENTENCIA tipo declaraci\u00c3\u00b3n, va a tomar el token IDENTIFICADOR
+	// Y con ello datos como su id dentro de la tabla de simbolos o su valor string ej. num1, nombre_usuario
   Variable_dato(){
 
-	//Se declara la variable t para manejar los objetos token
-    Token t ;
-
+	//Se declara la variable t para manejar los objetos token (lexemas)
+    Token t;
+	
+	//NO ES IMPORTANTE, ES PARA EL ANALIZADOR SEMANTICO
 	//Cuando se lee un token, se almacena su id dentro de td
+	//token.kind nos retorna el id del lexema en la tabla de simbolos
 	td = token.kind;
   } 
-
-//El token identificador (objeto tipo token), es almacenado dentro de t. Ya con esto dentro de una clase hijo de SimpleNode,
-// se asigna el nombre de la variable dentro de un objeto para ser impresa en el \u00c3\u00a1rbol
+//ARBOL SINTACTICO
+//El token identificado (objeto tipo token), es almacenado dentro de t. Ya tenemos los datos dentro del lexema
+// se asigna el nombre de la variable (el lexema, en este caso <IDENTIFICADOR>) 
+//dentro de un objeto Token para ser impresO en el \u00c3\u00a1rbol en la siguiente linea 
   t = <IDENTIFICADOR> 
    {
 	
 	// Aqui el string del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
-   // la gramatica mas el prefijo AST: ASTDeclaracion.java <---- Aqui se crearan peque\u00c3\u00b1os metodos para realizar la asignaci\u00c3\u00b3n
+   // la gramatica mas el prefijo 'AST': ASTDeclaracion.java <---- Aqui se crearan peque\u00c3\u00b1os metodos para realizar la asignaci\u00c3\u00b3n
+   //Es importante crear estos metodos porque, por si mismo no existe el metodo .setName(), este debe ser creado manualmente
 	jjtn000.setName(t.image);
 	
 	//Esta variable es para el proceso del analizador semantico, aun no es importante
 	var = t;
 
-   //******************COMENTARIOS PARA LA FASE SEMANTICA, A\u00c3\u0161N NO ES IMPORTANTE*********************
+   //******************COMENTARIOS PARA el analizador SEMANTICo, A\u00c3\u0161N NO ES IMPORTANTE*********************
 	//Manda a llamar la clase semantica y su metodo para comprobar esto 
 	//Retornara un string vacio o un null
 	if(ClaseSemantica.checkVariable(var).equals("")){
@@ -738,7 +776,8 @@ void Declaracion():
 //----------------------------------------------------------------------------------------------------------------------
 
 // ASIGNACION DE VALORES DESPUES DE UNA DECLARACION
-
+//ESTRUCTURA BASICA DE LA GRAMATICA
+//esto es la base 
 void AsignacionD():{/*@bgen(jjtree) AsignacionD */
   ASTAsignacionD jjtn000 = new ASTAsignacionD(JJTASIGNACIOND);
   boolean jjtc000 = true;
@@ -746,8 +785,8 @@ void AsignacionD():{/*@bgen(jjtree) AsignacionD */
 /*@egen*/} 
 {/*@bgen(jjtree) AsignacionD */
         try {
-/*@egen*/  
-	( LEER() | Expresion() )/*@bgen(jjtree)*/
+/*@egen*/   
+	( LEER()  | Expresion() )/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -767,7 +806,7 @@ void AsignacionD():{/*@bgen(jjtree) AsignacionD */
             jjtree.closeNodeScope(jjtn000, true);
           }
         }
-/*@egen*/
+/*@egen*/ 
 } 
 
 
@@ -855,7 +894,7 @@ void Expresion():{/*@bgen(jjtree) Expresion */
 {/*@bgen(jjtree) Expresion */
         try {
 /*@egen*/   
-	Termino() ( Mas_menos() Termino())*/*@bgen(jjtree)*/
+	Termino() ( Mas_menos() Termino() )*/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1173,6 +1212,7 @@ void ExpresionL():{}
 
 //---------------- GRAMATICAS AUXILIARES ----------------------------
 //Para cuando se necesite usar lexemas y no consumir la gramatica
+
 void Variable_IDEN():{/*@bgen(jjtree) Variable_IDEN */
                       ASTVariable_IDEN jjtn000 = new ASTVariable_IDEN(JJTVARIABLE_IDEN);
                       boolean jjtc000 = true;
@@ -1209,21 +1249,21 @@ try {
                 jjtree.closeNodeScope(jjtn000, true);
                 jjtc000 = false;
               }
-/*@egen*/ {jjtn000.setName(t.image);} |t = <NUMDECIMAL>/*@bgen(jjtree)*/
-                                                           {
-                                                             jjtree.closeNodeScope(jjtn000, true);
-                                                             jjtc000 = false;
-                                                           }
+/*@egen*/ {jjtn000.setName(t.image);} | t = <NUMDECIMAL>/*@bgen(jjtree)*/
+                                                            {
+                                                              jjtree.closeNodeScope(jjtn000, true);
+                                                              jjtc000 = false;
+                                                            }
 /*@egen*/{jjtn000.setName(t.image);}  | t = <EST_LOGIC>/*@bgen(jjtree)*/
-                                                                                                         {
-                                                                                                           jjtree.closeNodeScope(jjtn000, true);
-                                                                                                           jjtc000 = false;
-                                                                                                         }
+                                                                                                          {
+                                                                                                            jjtree.closeNodeScope(jjtn000, true);
+                                                                                                            jjtc000 = false;
+                                                                                                          }
 /*@egen*/{jjtn000.setName(t.image);}  | t = <CADENAS>/*@bgen(jjtree)*/
-                                                                                                                                                      {
-                                                                                                                                                        jjtree.closeNodeScope(jjtn000, true);
-                                                                                                                                                        jjtc000 = false;
-                                                                                                                                                      }
+                                                                                                                                                       {
+                                                                                                                                                         jjtree.closeNodeScope(jjtn000, true);
+                                                                                                                                                         jjtc000 = false;
+                                                                                                                                                       }
 /*@egen*/ {jjtn000.setName(t.image);} )/*@bgen(jjtree)*/
 } finally {
   if (jjtc000) {

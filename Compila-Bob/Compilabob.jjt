@@ -4,21 +4,45 @@ options {
 	KEEP_LINE_COLUMN = true; 
 	STATIC = false; 
 } 
+
 /*
+GRAMATICAS PARA AGREGAR LOS NODOS EN EL ARBOL
+Muestra - mensaje - concatenacion (Salamanca)
+LOGICOS (eduardo)
+comparadores (gussher)
+
+PASOS A REALIZAR PARA AGREGAR LOS NODOS AL ARBOL
+
+1-  HACER LOS CAMBIOS EN Compilabob.jjt dentro de cada gramatica
+		Token t; ---->    t = <LEXEMA>  ----> jjtThis.setName(t.image);
+2-  EJECUTAR EL COMANDO jjtree Compilabob.jjt para obtener las clases de cada nodo:
+		 ej. ASTVariable_dato.java
+3-	Hacer los cambios en el programa, como crear el metodo SetName(String value)
+
+4-	Ejecutar los otros comandos en busca de posibles errores
 
 
+
+**COMANDOS
 jjtree Compilabob.jjt
 javacc Compilabob.jj
-javac *.java
+
+** este compila los archivos java generados en busca de errores
+javac *.java 
+** los codigos con el lenguaje creado a ser analizados
 java Compilabob < Ejemplo7.txt
 java Compilabob < t1.txt
+
+
+
+
+
 ----------------------------------------------------------------  NOTA --------------------------------------------------------------------------
 ---------------------------------------------------------- MÉTODOS POR AGREGAR --------------------------------------------------------------------
 
 Método de error "=" en lugar de ":" para las asignaciones.
 Resolver el break de estructuras por el método SKIP
 		Quizás funcione ampliando el rango de error hasta llaves de abertura y cierre junto a los punto y coma.
-
 */
 
 PARSER_BEGIN(Compilabob) 
@@ -144,7 +168,7 @@ TOKEN:
 }
 
 
-
+ 
 //------------------------------- ANÁLISIS SINTACTICO - AREA DE GRAMATICAS ----------------------------------------------------
 
 // Gramatica inicial que contiene el cuerpo basico del codigo
@@ -187,6 +211,7 @@ catch (ParseException e) {
 
 }
 
+
 void Muestra():{}
 {
 
@@ -199,10 +224,15 @@ void Mensaje():{}{
 }
 
 void Concatenacion():{}{
-
+// Crear una variable auxiliar como Variable_IDEN() para <cadenas> y <mas>, 
+// tambien alterar las clases que se generen
   ( LOOKAHEAD(2)
-  	(Variable_IDEN()|<CADENAS>) <MAS> Concatenacion() | (Variable_IDEN()|<CADENAS>)) 
-}
+  	( (Variable_IDEN()|<CADENAS>) <MAS>  Concatenacion() ) | (Variable_IDEN()|<CADENAS>)) 
+} 
+
+
+
+
 
 //----------------------------------------------------------------------------------------------
 //########  DECIDE IF-ELSE ##########
@@ -243,8 +273,7 @@ void Ciclo_RepitoHastaQue():{}
 	<SepIzq> (sentencias())* <SepDer> (<PuntoComa>|errorFinlinea())
 }
 
-//Aqui en la condicional necesitamos describir en su propia clase los lexemas de los tokens
-
+//Aqui en la condicion necesitamos describir en su propia clase los lexemas de los tokens
 //	Dividi la condicion asi para:
 //		* Obtener el nombre de la gramatica como un subnodo, y que se imprima en el arbol
 //		* Darles a los nodos hijos de la condicion (inicio y limitefinal) su propia gramatica
@@ -256,12 +285,15 @@ void Condicion_RepitoHQ():{}{
 
 
 void Condi_inicio():{}{
+
 Variable_IDEN()
 
 }
 
 void Condi_limite():{}{
+
 	(Variable_IDEN()|DataType())
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -273,36 +305,43 @@ void Condi_limite():{}{
 } 
 
 //----------------------------------------------------------------------------------------------------------------------
-// DECLARACION DE VARIABLES 
+// DECLARACION DE VARIABLES //
+//----------------------------------------------------------------------------------------------------------------------
 void Declaracion():
-{   
+{   //ANALIZADOR SEMANTICO, AUN NO
+//*********************************
 	//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
 	int td;
 }
-{ 
-	//Cada que el analizador encuentre una declaración, va a tomar su id y el token de su IDENTIFICADOR ej. num1, nombre_usuario
+{ 	//COMENTARIOS PARA EL ARBOL SINTACTICO
+	//Cada que el analizador encuentre una SENTENCIA tipo declaración, va a tomar el token IDENTIFICADOR
+	// Y con ello datos como su id dentro de la tabla de simbolos o su valor string ej. num1, nombre_usuario
   Variable_dato(){
 
-	//Se declara la variable t para manejar los objetos token
-    Token t ;
-
+	//Se declara la variable t para manejar los objetos token (lexemas)
+    Token t;
+	
+	//NO ES IMPORTANTE, ES PARA EL ANALIZADOR SEMANTICO
 	//Cuando se lee un token, se almacena su id dentro de td
+	//token.kind nos retorna el id del lexema en la tabla de simbolos
 	td = token.kind;
   } 
-
-//El token identificador (objeto tipo token), es almacenado dentro de t. Ya con esto dentro de una clase hijo de SimpleNode,
-// se asigna el nombre de la variable dentro de un objeto para ser impresa en el árbol
+//ARBOL SINTACTICO
+//El token identificado (objeto tipo token), es almacenado dentro de t. Ya tenemos los datos dentro del lexema
+// se asigna el nombre de la variable (el lexema, en este caso <IDENTIFICADOR>) 
+//dentro de un objeto Token para ser impresO en el árbol en la siguiente linea 
   t = <IDENTIFICADOR> 
    {
 	
 	// Aqui el string del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
-   // la gramatica mas el prefijo AST: ASTDeclaracion.java <---- Aqui se crearan pequeños metodos para realizar la asignación
+   // la gramatica mas el prefijo 'AST': ASTDeclaracion.java <---- Aqui se crearan pequeños metodos para realizar la asignación
+   //Es importante crear estos metodos porque, por si mismo no existe el metodo .setName(), este debe ser creado manualmente
 	jjtThis.setName(t.image);
 	
 	//Esta variable es para el proceso del analizador semantico, aun no es importante
 	var = t;
 
-   //******************COMENTARIOS PARA LA FASE SEMANTICA, AÚN NO ES IMPORTANTE*********************
+   //******************COMENTARIOS PARA el analizador SEMANTICo, AÚN NO ES IMPORTANTE*********************
 	//Manda a llamar la clase semantica y su metodo para comprobar esto 
 	//Retornara un string vacio o un null
 	if(ClaseSemantica.checkVariable(var).equals("")){
@@ -329,10 +368,11 @@ void Declaracion():
 //----------------------------------------------------------------------------------------------------------------------
 
 // ASIGNACION DE VALORES DESPUES DE UNA DECLARACION
-
+//ESTRUCTURA BASICA DE LA GRAMATICA
+//esto es la base 
 void AsignacionD():{} 
-{  
-	( LEER() | Expresion() )
+{   
+	( LEER()  | Expresion() ) 
 } 
 
 
@@ -383,7 +423,7 @@ void Asignacion():
 // Y se mostraran justo debajo de la estructura de las expresiones
 void Expresion():{} 
 {   
-	Termino() ( Mas_menos() Termino())*
+	Termino() ( Mas_menos() Termino() )*
 } 
 
 
@@ -459,6 +499,7 @@ void ExpresionL():{}
 
 //---------------- GRAMATICAS AUXILIARES ----------------------------
 //Para cuando se necesite usar lexemas y no consumir la gramatica
+
 void Variable_IDEN():{Token t;}{
 	t = <IDENTIFICADOR> {jjtThis.setName(t.image);}
 }
@@ -467,7 +508,7 @@ void Variable_IDEN():{Token t;}{
 void DataType():{Token t;} 
 { //Tipos de datos  
 	 
-(t = <NUMERO> {jjtThis.setName(t.image);} |t = <NUMDECIMAL>{jjtThis.setName(t.image);}  | t = <EST_LOGIC>{jjtThis.setName(t.image);}  | t = <CADENAS> {jjtThis.setName(t.image);} )
+(t = <NUMERO> {jjtThis.setName(t.image);} | t = <NUMDECIMAL>{jjtThis.setName(t.image);}  | t = <EST_LOGIC>{jjtThis.setName(t.image);}  | t = <CADENAS> {jjtThis.setName(t.image);} )
 } 
 void Comparadores():{}
 {
