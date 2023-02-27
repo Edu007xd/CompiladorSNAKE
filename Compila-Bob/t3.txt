@@ -1,0 +1,8 @@
+compilar_coatl{
+
+	E_ valor1:5;
+	E_ valor2:5;
+	decide (valor1<=valor2):{
+		muestra("valor1 es menor que valor2"); 
+	}
+}ejecutar_coatl

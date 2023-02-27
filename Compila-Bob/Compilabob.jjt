@@ -510,15 +510,14 @@ void DataType():{Token t;}
 	 
 (t = <NUMERO> {jjtThis.setName(t.image);} | t = <NUMDECIMAL>{jjtThis.setName(t.image);}  | t = <EST_LOGIC>{jjtThis.setName(t.image);}  | t = <CADENAS> {jjtThis.setName(t.image);} )
 } 
-void Comparadores():{}
+void Comparadores():{Token t6;}
 {
- <MENOR>   
-|<MAYOR> 
-|<MENOR_IGUAL>  
-|<MAYOR_IGUAL>  
-|<IGUALDAD> 
-|<NOTEQ> 
+	LOOKAHEAD(3)
+ t6 = <MENOR> {jjtThis.setName(t6.image);} |  t6 = <MAYOR> {jjtThis.setName(t6.image);} 
+| t6 = <MENOR_IGUAL> {jjtThis.setName(t6.image);} |t6 = <MAYOR_IGUAL> {jjtThis.setName(t6.image);} 
+| t6 = <IGUALDAD> {jjtThis.setName(t6.image);} | t6 = <NOTEQ> {jjtThis.setName(t6.image);}  
 }
+
 
 void LEER():{ Token t;} 
 {   
