@@ -7,8 +7,8 @@ options {
 
 /*
 GRAMATICAS PARA AGREGAR LOS NODOS EN EL ARBOL
-Muestra - mensaje - concatenacion (Salamanca)
-LOGICOS (eduardo)
+Muestra (Salamanca)
+ concatenacion (eduardo)
 comparadores (gussher)
 
 PASOS A REALIZAR PARA AGREGAR LOS NODOS AL ARBOL
@@ -38,7 +38,7 @@ java Compilabob < t1.txt
 
 
 ----------------------------------------------------------------  NOTA --------------------------------------------------------------------------
----------------------------------------------------------- MÉTODOS POR AGREGAR --------------------------------------------------------------------
+---------------------------------------------------------- codigo --------------------------------------------------------------------
 
 Método de error "=" en lugar de ":" para las asignaciones.
 Resolver el break de estructuras por el método SKIP
@@ -49,11 +49,18 @@ PARSER_BEGIN(Compilabob)
 
 import java.util.*;
 import java.io.*;
+
 public class Compilabob {  
+
+	//********************
+	public static Hashtable ST  = new Hashtable();
+	String temp;
+	STC temp2;
+
 	String errormsg="",datos = "";
 	static  String expresion =" "; 
 	int sentencias_inco =0;  
-	//variebales para semantica-------------------------------
+	//variables para semantica-------------------------------
     String Type="", Valor=""; //variables cache para capturar el par
     String lugar = "";
 	Token var;
@@ -62,7 +69,17 @@ public class Compilabob {
 		Compilabob compilador = new Compilabob(System.in); 
 		try { 
 			SimpleNode e = compilador.Codigo();
-			e.dump(">"); 
+			e.dump(">");
+
+
+
+			/* *******************
+			Enumeration t = ST.keys();
+			while(t.hasMoreElements() == true){
+				temp = (String)t.nextElement
+			}
+			*/
+
 		}catch(ParseException pe){
             pe.printStackTrace();
         }
@@ -77,9 +94,12 @@ public class Compilabob {
 		}else{
 			System.out.println(compilador.errormsg);
 		}
+		System.out.println("PILA SEMANTICA CREADA EXITOSAMENTE");
 		System.out.println("FINAL PRINT\n" +"Sentencias incorrectas encontradas: "+compilador.sentencias_inco);
-		System.out.println("----- Pila Semantica ----"+ ClaseSemantica.tabla);
-		System.out.println("EXPRESION ----- : "+expresion);
+		//System.out.println("----- Tabla de simbolos ----\n"+ ClaseSemantica.tabla);
+		System.out.println("TABLA DE SIMBOLOS CREADA EXITOSAMENTE" );
+		ClaseSemantica.Crear_txt();
+		//System.out.println("EXPRESION ----- : "+expresion);
 	} 
     // {jjtThis.setImage(t.image);}
 	
@@ -173,7 +193,7 @@ TOKEN:
 
 // Gramatica inicial que contiene el cuerpo basico del codigo
 SimpleNode Codigo():
-{	//Se inicializa 
+{	//Se inicializan las tablas donde seran referencia para verrificar validez semantica
 	ClaseSemantica.SetTables();	
 } 
 {
@@ -212,10 +232,10 @@ catch (ParseException e) {
 }
 
 
-void Muestra():{}
+void Muestra():{   }
 {
 
-	<ESCRIBIR> <ParenIzq>  Mensaje()   <ParenDer> (<PuntoComa>|errorFinlinea())
+	<ESCRIBIR> {} <ParenIzq>  Mensaje()   <ParenDer> (<PuntoComa>|errorFinlinea())
 }
 
 void Mensaje():{}{
@@ -378,26 +398,30 @@ void AsignacionD():{}
 
 // ASIGNACION GENERAL DE VALORES A UNA VARIABLE
 void Asignacion():
-{ //Declaracion de variables Token
-// t es para el arbol
-// t2 es usado para el analizador semantico
+{ 
+	//Declaracion de variables Token
+	// t es para el arbol
+	// t2 es usado para el analizador semantico
 	Token t, t2;
 }
-{  //Asignamos el valor del identificador de la variable en la clase ASTAsignacion
-//  para que el arbol sea mostrado de la siguiente forma :
-//		 "Asignacion para el identificador: " + this.name
+{  
+	//Asignamos el valor del identificador de la variable en la clase ASTAsignacion
+	//para que el arbol sea mostrado de la siguiente forma :
+	//		 "Asignacion para el identificador: " + this.name
 	t = <IDENTIFICADOR>{ 
 		jjtThis.setName(t.image);
 		
 		//Ya lo que sigue despues es para el analizador semantico
 		//Apartado del analizador semantico
 		var = t;
+
 		//Aqui se intenta buscar algo parecido: Se determina si la variable existe o ha sido declarada
 		// Si no existe, entonces retornara un mensaje de error anunciando eso
 		//Y ese mensaje se sumara a todos los mensajes de error existentes
 	if(!(ClaseSemantica.checkVariable(var).equals(""))){
 		errormsg = errormsg+ClaseSemantica.checkVariable(var);
 		sentencias_inco++;
+
 	}//Si no hay error, entonces se sigue de largo
   }  <ASIGNACION>
 	( LEER() | Expresion()) {
@@ -405,8 +429,11 @@ void Asignacion():
 		/*if(t2.kind != LEER){
 			Expresiones.Convierte(expresion);
 		} */
+
+
 		t2 = token;
-		//
+		//Se verifica que las declaraciones sean congruentes 
+		//Se verifica que el tipo de variable y su dato sean del mismo tipo
 		if(!(ClaseSemantica.checkAsing(var,t2).equals(" "))){
 			errormsg = errormsg+ClaseSemantica.checkAsing(var,t2);
 			sentencias_inco++;
@@ -441,7 +468,7 @@ void Factor():{}
 
 void Primario():{}
 {
-	((<ParenIzq>	Expresion() <ParenDer>)  | DataType() | Variable_IDEN())
+	( (<ParenIzq>	Expresion() <ParenDer>)  | DataType() | Variable_IDEN())
 }
 
 //--------------------OPERAdores----------------------
@@ -483,7 +510,7 @@ void FactorR():{}
 /* NO ME GUSTÓ AL FINAL ESTA GRAMATICA, IGNORAR
 void ExpresionL():{} 
 {   LOOKAHEAD(2) 
-	(  FactorL() Logicos() ExpresionL()  ) 
+	(  FactorL() Comparadores() ExpresionL()  ) 
 	  
 	|  FactorL()
 } */
@@ -510,6 +537,8 @@ void DataType():{Token t;}
 	 
 (t = <NUMERO> {jjtThis.setName(t.image);} | t = <NUMDECIMAL>{jjtThis.setName(t.image);}  | t = <EST_LOGIC>{jjtThis.setName(t.image);}  | t = <CADENAS> {jjtThis.setName(t.image);} )
 } 
+
+
 void Comparadores():{Token t6;}
 {
 	LOOKAHEAD(3)
@@ -517,6 +546,7 @@ void Comparadores():{Token t6;}
 | t6 = <MENOR_IGUAL> {jjtThis.setName(t6.image);} |t6 = <MAYOR_IGUAL> {jjtThis.setName(t6.image);} 
 | t6 = <IGUALDAD> {jjtThis.setName(t6.image);} | t6 = <NOTEQ> {jjtThis.setName(t6.image);}  
 }
+
 
 
 void LEER():{ Token t;} 
@@ -533,11 +563,6 @@ t5= <ENTERO>   {jjtThis.setName(t5.image);}
 |t5=<BOOLEANO>  {jjtThis.setName(t5.image);}
 } 
 
-void Logicos():{}
-{
-  <OR>  
- |<AND>  
-}
 
 
 void Operadores():{} 

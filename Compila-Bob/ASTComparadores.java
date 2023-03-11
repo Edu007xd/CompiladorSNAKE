@@ -6,10 +6,6 @@ public class ASTComparadores extends SimpleNode {
     super(id);
   }
 
-  /*public ASTComparadores(Compilabob p, int id) {
-    super(p, id);
-  }*/
-  
   public String toString() {
     switch(this.name){
         case "<":{
@@ -39,6 +35,7 @@ public void setName(String n) {
   this.name = n;
 }
 
-}
 
+
+}
 /* JavaCC - OriginalChecksum=4d0bb8b6afaa11f8fefc0a47d5cd6a2b (do not edit this line) */

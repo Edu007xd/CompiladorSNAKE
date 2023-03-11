@@ -4,9 +4,18 @@ import java.util.Hashtable;
 import java.lang.String;
 import java.util.ArrayList;
 
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class ClaseSemantica{
 	//Se hace una instancia de la clase Hashtable con un objeto llamado tabla
-    public static Hashtable tabla = new Hashtable();
+    public static Hashtable <String, Integer> tabla = new Hashtable();
 	//Se declara una lista para cada tipo de dato: Entero, Decimal y String
 	//En el se guardaran las key de los tokens
     private static ArrayList<Integer> intComp = new ArrayList();
@@ -44,6 +53,7 @@ public class ClaseSemantica{
 		|<FLOTANTE: "D_">//35
 		|<ID_CADENA: "C_">//36
 		|<BOOLEANO: "L_">//37
+		
 		|<NUMERO: (["0"-"9"])+>//38
 		|<NUMDECIMAL: (["0"-"9"])+ "." (["0"-"9"])+ | (["0"-"9"])+ "." | "." (["0"-"9"])+>//39
 		|<CADENAS: ("\""(~["\"","#","\n","\r","#","#","\r","\n"])*"\"")>//40
@@ -53,7 +63,8 @@ public class ClaseSemantica{
 
 	public static String checkAsing(Token TokenIzq, Token TokenAsig)
 	{
-		//variables en las cuales se almacenara el tipo de dato del identificador y de las asignaciones (ejemplo: n1(tipoIdent1) = 2(tipoIdent2) + 3(tipoIdent2))
+		//variables en las cuales se almacenara el tipo de dato del identificador 
+		//y de las asignaciones (ejemplo: n1(tipoIdent1) = 2(tipoIdent2) + 3(tipoIdent2))
 		int tipoIdent1;
 		int tipoIdent2;		
 							/* De la tabla obtenemos el tipo de dato del identificador  
@@ -69,7 +80,10 @@ public class ClaseSemantica{
 			}
 			catch(Exception e)
 			{
-				//Si TokenIzq.image no se encuentra en la tabla en la cual se agregan los tokens, el token no ha sido declarado, y se manda un error
+				//Si TokenIzq.image no se encuentra en la tabla en la cual se agregan los tokens,
+				// el token no ha sido declarado, y se manda un error.
+				//Se envia un espacio string, porque todos estos metodos retornan un string
+				//usualmente de errores
 				return " ";
 			}
 		}
@@ -107,21 +121,21 @@ public class ClaseSemantica{
 			if(intComp.contains(tipoIdent2))
 				return " ";
 			else //Si el tipo de dato no es compatible manda el error
-				return "Error semántico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Entero\r\n";
+				return "Error semantico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Entero\r\n";
 		}
 		else if(tipoIdent1 == 35 || tipoIdent1 == 34) //decimal
 		{
 			if(decComp.contains(tipoIdent2))
 				return " ";
 			else
-				return "Error semántico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Decimal \r\n";
+				return "Error semantico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Decimal \r\n";
 		}
 		else if(tipoIdent1 == 36) //string
 		{
 			if(strComp.contains(tipoIdent2))
 				return " ";
 			else
-				return "Error semántico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Cadena \r\n";
+				return "Error semantico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Cadena \r\n";
 		}else
 		{
 			return " ";
@@ -144,11 +158,24 @@ public class ClaseSemantica{
 			catch(Exception e)
 			{				//Si no lo puede obtener, manda el error
 				//								    Linea donde esta el token		  Columna donde esta el token	Imagen del token
-				return "Error semántico en la línea " +checkTok.beginLine +", columna  "+checkTok.beginColumn +", "+ checkTok.image + " no ha sido declarado \r\n";
+				return "Error semantico en la linea " +checkTok.beginLine +", columna  "+checkTok.beginColumn +", "+ checkTok.image + " no ha sido declarado \r\n";
 			}
 		}
 	
 
-     
 
+	public static void Crear_txt(){
+		try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("tabla_symbol.txt"));
+            for (String key : tabla.keySet()) {
+                int value = tabla.get(key);
+                writer.write(key + "=" + value);
+                writer.newLine();
+            }
+            writer.close();
+            System.out.println("Se ha creado la tabla de simbolos exitosamente");
+        } catch (IOException e) {
+            System.err.println("Ha ocurrido un error durante la creacion del archivo: " + e.getMessage());
+        }
+	}
 }

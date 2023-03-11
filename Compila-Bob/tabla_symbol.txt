@@ -1,0 +1,4 @@
+cadena=36
+resultado=34
+valor2=34
+valor1=34
