@@ -1,19 +1,23 @@
 compilar_coatl{
 
-	E_ valor1:3 ;
+	E_ valor1:  5 ;
 	valor1:"cadena" ;
-
-	valor2 : 100  ;
+	C_ num: "string";
+	C_ valor2 : 3  ;
 	C_ cadena: "lolXD";
 	repito hasta que(n,var1):{
-		 num : 3-(45+1)*5;
+		 num : 3-(45+1)*"lol";
 		muestra("THIS IS MY NIGGA "); 
 	};	
 
-	E_ valor2 : recibir;
+	E_ valor3 : recibir;
 	muestra("ESTE ES EL RESUTADO");
         muestra( );
 	E_ resultado : valor1+valor2;
 	muestra(resultado+"MI CARA CADENA"+valor2);
+
+# poner las variables incorrectas al final
+# o ponerlas de forma jerarquica mas importante
+# de otra forma, sino no lo reconocera
 
 }ejecutar_coatl

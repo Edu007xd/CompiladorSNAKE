@@ -2,12 +2,14 @@
 import java.util.*;
 import java.io.*;
 
+
 public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, CompilabobConstants {/*@bgen(jjtree)*/
   protected JJTCompilabobState jjtree = new JJTCompilabobState();
         //********************
         public static Hashtable ST  = new Hashtable();
         String temp;
-        STC temp2;
+        Token varEXP;
+
 
         String errormsg="",datos = "";
         static  String expresion =" ";
@@ -54,6 +56,18 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
                 //System.out.println("EXPRESION ----- : "+expresion);
         }
 
+
+
+
+
+private Token getNextToken(Token token) {
+    Token nextToken = token.next;
+    if (nextToken == null) {
+        nextToken = token.next;
+    }
+    return nextToken;
+}
+
 //------------------------------- ANÃ?LISIS SINTACTICO - AREA DE GRAMATICAS ----------------------------------------------------
 
 // Gramatica inicial que contiene el cuerpo basico del codigo
@@ -61,7 +75,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
  /*@bgen(jjtree) Codigo */
         ASTCodigo jjtn000 = new ASTCodigo(JJTCODIGO);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);//Se inicializan las tablas donde seran referencia para verrificar validez semantica
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));//Se inicializan las tablas donde seran referencia para verrificar validez semantica
         ClaseSemantica.SetTables();
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -100,6 +115,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
       jj_consume_token(0);
                                                                   jjtree.closeNodeScope(jjtn000, true);
                                                                   jjtc000 = false;
+                                                                  jjtn000.jjtSetLastToken(getToken(0));
                                                                  {if (true) return jjtn000;}
     } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -118,6 +134,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
     throw new Error("Missing return statement in function");
@@ -129,6 +146,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTCuerpo jjtn000 = new ASTCuerpo(JJTCUERPO);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       label_1:
       while (true) {
@@ -169,6 +187,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
     }
   }
@@ -179,6 +198,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTsentencias jjtn000 = new ASTsentencias(JJTSENTENCIAS);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       try {
         if (jj_2_1(2)) {
@@ -241,6 +261,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
     }
   }
@@ -250,6 +271,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTMuestra jjtn000 = new ASTMuestra(JJTMUESTRA);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       jj_consume_token(ESCRIBIR);
 
@@ -281,6 +303,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -290,6 +313,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTMensaje jjtn000 = new ASTMensaje(JJTMENSAJE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case CADENAS:
@@ -300,6 +324,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
         jj_la1[8] = jj_gen;
                             jjtree.closeNodeScope(jjtn000, true);
                             jjtc000 = false;
+                            jjtn000.jjtSetLastToken(getToken(0));
 
       }
     } catch (Throwable jjte000) {
@@ -319,6 +344,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -328,6 +354,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTConcatenacion jjtn000 = new ASTConcatenacion(JJTCONCATENACION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       if (jj_2_2(2)) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -384,6 +411,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
+      jjtn000.jjtSetLastToken(getToken(0));
     }
     }
   }
@@ -395,6 +423,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTDecide jjtn000 = new ASTDecide(JJTDECIDE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       IF();
       if (jj_2_3(2)) {
@@ -402,6 +431,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
       } else {
                  jjtree.closeNodeScope(jjtn000, true);
                  jjtc000 = false;
+                 jjtn000.jjtSetLastToken(getToken(0));
 
       }
     } catch (Throwable jjte000) {
@@ -421,6 +451,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
     }
   }
@@ -430,6 +461,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTIF jjtn000 = new ASTIF(JJTIF);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       jj_consume_token(IF);
       jj_consume_token(ParenIzq);
@@ -477,6 +509,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -486,6 +519,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTELSE jjtn000 = new ASTELSE(JJTELSE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       jj_consume_token(ELSE);
       jj_consume_token(SepIzq);
@@ -537,6 +571,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -554,6 +589,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTCiclo_RepitoHastaQue jjtn000 = new ASTCiclo_RepitoHastaQue(JJTCICLO_REPITOHASTAQUE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       jj_consume_token(CicloIterado);
       jj_consume_token(ParenIzq);
@@ -609,6 +645,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
            if (jjtc000) {
              jjtree.closeNodeScope(jjtn000, true);
+             jjtn000.jjtSetLastToken(getToken(0));
            }
     }
   }
@@ -624,6 +661,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTCondicion_RepitoHQ jjtn000 = new ASTCondicion_RepitoHQ(JJTCONDICION_REPITOHQ);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       Condi_inicio();
       jj_consume_token(COMA);
@@ -645,6 +683,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
    if (jjtc000) {
      jjtree.closeNodeScope(jjtn000, true);
+     jjtn000.jjtSetLastToken(getToken(0));
    }
     }
   }
@@ -654,6 +693,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTCondi_inicio jjtn000 = new ASTCondi_inicio(JJTCONDI_INICIO);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       Variable_IDEN();
     } catch (Throwable jjte000) {
@@ -673,6 +713,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
     }
   }
@@ -682,6 +723,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTCondi_limite jjtn000 = new ASTCondi_limite(JJTCONDI_LIMITE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENTIFICADOR:
@@ -715,6 +757,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -725,6 +768,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTCiclo_RepitoMientras jjtn000 = new ASTCiclo_RepitoMientras(JJTCICLO_REPITOMIENTRAS);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       jj_consume_token(CicloLimit);
       jj_consume_token(ASIGNACION);
@@ -781,6 +825,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -792,7 +837,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
  /*@bgen(jjtree) Declaracion */
         ASTDeclaracion jjtn000 = new ASTDeclaracion(JJTDECLARACION);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
         int td;
     try {
       Variable_dato();
@@ -816,6 +862,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
         //**ANALIZADOR SEMANTICO**
         //Esta variable es para el proceso del analizador semantico 
         var = t;
+        varEXP = var;
+
 
    //******************COMENTARIOS PARA el analizador SEMANTICO*********************
         //Manda a llamar la clase semantica y su metodo para comprobar esto 
@@ -838,6 +886,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
       case ASIGNACION:
         jj_consume_token(ASIGNACION);
         AsignacionD();
+
         break;
       default:
         jj_la1[20] = jj_gen;
@@ -868,6 +917,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
+      jjtn000.jjtSetLastToken(getToken(0));
     }
     }
   }
@@ -879,9 +929,10 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
 //esto es la base 
   final public void AsignacionD() throws ParseException {
                     /*@bgen(jjtree) AsignacionD */
-  ASTAsignacionD jjtn000 = new ASTAsignacionD(JJTASIGNACIOND);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+                ASTAsignacionD jjtn000 = new ASTAsignacionD(JJTASIGNACIOND);
+                boolean jjtc000 = true;
+                jjtree.openNodeScope(jjtn000);
+                jjtn000.jjtSetFirstToken(getToken(1));Token t2;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LEER:
@@ -895,6 +946,15 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
       case EST_LOGIC:
       case IDENTIFICADOR:
         Expresion();
+                                  jjtree.closeNodeScope(jjtn000, true);
+                                  jjtc000 = false;
+                                  jjtn000.jjtSetLastToken(getToken(0));
+        t2 = token;
+
+        if(!(ClaseSemantica.checkAsing(varEXP,t2).equals(" "))){
+                        errormsg = errormsg+ClaseSemantica.checkAsing(var,t2);
+                        sentencias_inco++;
+                }
         break;
       default:
         jj_la1[22] = jj_gen;
@@ -918,6 +978,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -927,7 +988,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
  /*@bgen(jjtree) Asignacion */
         ASTAsignacion jjtn000 = new ASTAsignacion(JJTASIGNACION);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);//Declaracion de variables Token
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));//Declaracion de variables Token
         // t es para el arbol
         // t2 es usado para el analizador semantico
         Token t, t2;
@@ -981,6 +1043,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
       }
                                   jjtree.closeNodeScope(jjtn000, true);
                                   jjtc000 = false;
+                                  jjtn000.jjtSetLastToken(getToken(0));
                 /*
 		ERROR DE ASIGNACION DE DATOS QUE NO SON DEL MISMO TIPO
 		token es el objeto usado internamente por el compilador con el que recorre todo el codigo leido.
@@ -1016,6 +1079,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1032,6 +1096,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTExpresion jjtn000 = new ASTExpresion(JJTEXPRESION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       Termino();
       label_6:
@@ -1065,6 +1130,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1074,6 +1140,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTTermino jjtn000 = new ASTTermino(JJTTERMINO);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       Factor();
       label_7:
@@ -1108,6 +1175,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1117,6 +1185,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTFactor jjtn000 = new ASTFactor(JJTFACTOR);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MENOS:
@@ -1153,6 +1222,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1162,6 +1232,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTPrimario jjtn000 = new ASTPrimario(JJTPRIMARIO);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ParenIzq:
@@ -1200,6 +1271,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1211,19 +1283,22 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
                   /*@bgen(jjtree) Mas_menos */
                   ASTMas_menos jjtn000 = new ASTMas_menos(JJTMAS_MENOS);
                   boolean jjtc000 = true;
-                  jjtree.openNodeScope(jjtn000);Token t;
+                  jjtree.openNodeScope(jjtn000);
+                  jjtn000.jjtSetFirstToken(getToken(1));Token t;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MAS:
         t = jj_consume_token(MAS);
                     jjtree.closeNodeScope(jjtn000, true);
                     jjtc000 = false;
+                    jjtn000.jjtSetLastToken(getToken(0));
                    jjtn000.setName(t.image);
         break;
       case MENOS:
         t = jj_consume_token(MENOS);
                                                               jjtree.closeNodeScope(jjtn000, true);
                                                               jjtc000 = false;
+                                                              jjtn000.jjtSetLastToken(getToken(0));
                                                              jjtn000.setName(t.image);
         break;
       default:
@@ -1234,6 +1309,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1242,15 +1318,18 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
                /*@bgen(jjtree) Menoss */
                ASTMenoss jjtn000 = new ASTMenoss(JJTMENOSS);
                boolean jjtc000 = true;
-               jjtree.openNodeScope(jjtn000);Token t;
+               jjtree.openNodeScope(jjtn000);
+               jjtn000.jjtSetFirstToken(getToken(1));Token t;
     try {
       t = jj_consume_token(MENOS);
                       jjtree.closeNodeScope(jjtn000, true);
                       jjtc000 = false;
+                      jjtn000.jjtSetLastToken(getToken(0));
                      jjtn000.setName(t.image);
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1259,25 +1338,29 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
              /*@bgen(jjtree) MDM */
              ASTMDM jjtn000 = new ASTMDM(JJTMDM);
              boolean jjtc000 = true;
-             jjtree.openNodeScope(jjtn000);Token t;
+             jjtree.openNodeScope(jjtn000);
+             jjtn000.jjtSetFirstToken(getToken(1));Token t;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MULTI:
         t = jj_consume_token(MULTI);
               jjtree.closeNodeScope(jjtn000, true);
               jjtc000 = false;
+              jjtn000.jjtSetLastToken(getToken(0));
              jjtn000.setName(t.image);
         break;
       case DIV:
         t = jj_consume_token(DIV);
                                                    jjtree.closeNodeScope(jjtn000, true);
                                                    jjtc000 = false;
+                                                   jjtn000.jjtSetLastToken(getToken(0));
                                                   jjtn000.setName(t.image);
         break;
       case MODULO:
         t = jj_consume_token(MODULO);
                                                                                            jjtree.closeNodeScope(jjtn000, true);
                                                                                            jjtc000 = false;
+                                                                                           jjtn000.jjtSetLastToken(getToken(0));
                                                                                           jjtn000.setName(t.image);
         break;
       default:
@@ -1288,6 +1371,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
     }
   }
@@ -1298,6 +1382,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTOpComparacion jjtn000 = new ASTOpComparacion(JJTOPCOMPARACION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NUMERO:
@@ -1331,6 +1416,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
                   if (jjtc000) {
                     jjtree.closeNodeScope(jjtn000, true);
+                    jjtn000.jjtSetLastToken(getToken(0));
                   }
     }
   }
@@ -1340,6 +1426,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTFactorL jjtn000 = new ASTFactorL(JJTFACTORL);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       DataType();
       Comparadores();
@@ -1375,6 +1462,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1384,6 +1472,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
   ASTFactorR jjtn000 = new ASTFactorR(JJTFACTORR);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       Variable_IDEN();
       Comparadores();
@@ -1419,6 +1508,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1446,15 +1536,18 @@ void ExpresionL():{}
                       /*@bgen(jjtree) Variable_IDEN */
                       ASTVariable_IDEN jjtn000 = new ASTVariable_IDEN(JJTVARIABLE_IDEN);
                       boolean jjtc000 = true;
-                      jjtree.openNodeScope(jjtn000);Token t;
+                      jjtree.openNodeScope(jjtn000);
+                      jjtn000.jjtSetFirstToken(getToken(1));Token t;
     try {
       t = jj_consume_token(IDENTIFICADOR);
                               jjtree.closeNodeScope(jjtn000, true);
                               jjtc000 = false;
+                              jjtn000.jjtSetLastToken(getToken(0));
                              jjtn000.setName(t.image);
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1464,31 +1557,36 @@ void ExpresionL():{}
                  /*@bgen(jjtree) DataType */
                  ASTDataType jjtn000 = new ASTDataType(JJTDATATYPE);
                  boolean jjtc000 = true;
-                 jjtree.openNodeScope(jjtn000);Token t;
+                 jjtree.openNodeScope(jjtn000);
+                 jjtn000.jjtSetFirstToken(getToken(1));Token t;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NUMERO:
         t = jj_consume_token(NUMERO);
                 jjtree.closeNodeScope(jjtn000, true);
                 jjtc000 = false;
+                jjtn000.jjtSetLastToken(getToken(0));
                jjtn000.setName(t.image);
         break;
       case NUMDECIMAL:
         t = jj_consume_token(NUMDECIMAL);
                                                               jjtree.closeNodeScope(jjtn000, true);
                                                               jjtc000 = false;
+                                                              jjtn000.jjtSetLastToken(getToken(0));
                                                              jjtn000.setName(t.image);
         break;
       case EST_LOGIC:
         t = jj_consume_token(EST_LOGIC);
                                                                                                             jjtree.closeNodeScope(jjtn000, true);
                                                                                                             jjtc000 = false;
+                                                                                                            jjtn000.jjtSetLastToken(getToken(0));
                                                                                                            jjtn000.setName(t.image);
         break;
       case CADENAS:
         t = jj_consume_token(CADENAS);
                                                                                                                                                          jjtree.closeNodeScope(jjtn000, true);
                                                                                                                                                          jjtc000 = false;
+                                                                                                                                                         jjtn000.jjtSetLastToken(getToken(0));
                                                                                                                                                         jjtn000.setName(t.image);
         break;
       default:
@@ -1499,6 +1597,7 @@ void ExpresionL():{}
     } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
     }
   }
@@ -1507,12 +1606,14 @@ void ExpresionL():{}
                      /*@bgen(jjtree) Comparadores */
                      ASTComparadores jjtn000 = new ASTComparadores(JJTCOMPARADORES);
                      boolean jjtc000 = true;
-                     jjtree.openNodeScope(jjtn000);Token t6;
+                     jjtree.openNodeScope(jjtn000);
+                     jjtn000.jjtSetFirstToken(getToken(1));Token t6;
     try {
       if (jj_2_4(3)) {
         t6 = jj_consume_token(MENOR);
                 jjtree.closeNodeScope(jjtn000, true);
                 jjtc000 = false;
+                jjtn000.jjtSetLastToken(getToken(0));
                jjtn000.setName(t6.image);
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1520,30 +1621,35 @@ void ExpresionL():{}
           t6 = jj_consume_token(MAYOR);
                                                              jjtree.closeNodeScope(jjtn000, true);
                                                              jjtc000 = false;
+                                                             jjtn000.jjtSetLastToken(getToken(0));
                                                             jjtn000.setName(t6.image);
           break;
         case MENOR_IGUAL:
           t6 = jj_consume_token(MENOR_IGUAL);
                        jjtree.closeNodeScope(jjtn000, true);
                        jjtc000 = false;
+                       jjtn000.jjtSetLastToken(getToken(0));
                       jjtn000.setName(t6.image);
           break;
         case MAYOR_IGUAL:
           t6 = jj_consume_token(MAYOR_IGUAL);
                                                                         jjtree.closeNodeScope(jjtn000, true);
                                                                         jjtc000 = false;
+                                                                        jjtn000.jjtSetLastToken(getToken(0));
                                                                        jjtn000.setName(t6.image);
           break;
         case IGUALDAD:
           t6 = jj_consume_token(IGUALDAD);
                     jjtree.closeNodeScope(jjtn000, true);
                     jjtc000 = false;
+                    jjtn000.jjtSetLastToken(getToken(0));
                    jjtn000.setName(t6.image);
           break;
         case NOTEQ:
           t6 = jj_consume_token(NOTEQ);
                                                                 jjtree.closeNodeScope(jjtn000, true);
                                                                 jjtc000 = false;
+                                                                jjtn000.jjtSetLastToken(getToken(0));
                                                                jjtn000.setName(t6.image);
           break;
         default:
@@ -1555,6 +1661,7 @@ void ExpresionL():{}
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1563,15 +1670,18 @@ void ExpresionL():{}
              /*@bgen(jjtree) LEER */
               ASTLEER jjtn000 = new ASTLEER(JJTLEER);
               boolean jjtc000 = true;
-              jjtree.openNodeScope(jjtn000);Token t;
+              jjtree.openNodeScope(jjtn000);
+              jjtn000.jjtSetFirstToken(getToken(1));Token t;
     try {
       t = jj_consume_token(LEER);
                      jjtree.closeNodeScope(jjtn000, true);
                      jjtc000 = false;
+                     jjtn000.jjtSetLastToken(getToken(0));
                     jjtn000.setName(t.image);
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1580,12 +1690,14 @@ void ExpresionL():{}
                       /*@bgen(jjtree) Variable_dato */
                       ASTVariable_dato jjtn000 = new ASTVariable_dato(JJTVARIABLE_DATO);
                       boolean jjtc000 = true;
-                      jjtree.openNodeScope(jjtn000);Token t5;
+                      jjtree.openNodeScope(jjtn000);
+                      jjtn000.jjtSetFirstToken(getToken(1));Token t5;
     try {
       if (jj_2_5(3)) {
         t5 = jj_consume_token(ENTERO);
                  jjtree.closeNodeScope(jjtn000, true);
                  jjtc000 = false;
+                 jjtn000.jjtSetLastToken(getToken(0));
                 jjtn000.setName(t5.image);
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1593,18 +1705,21 @@ void ExpresionL():{}
           t5 = jj_consume_token(FLOTANTE);
                    jjtree.closeNodeScope(jjtn000, true);
                    jjtc000 = false;
+                   jjtn000.jjtSetLastToken(getToken(0));
                   jjtn000.setName(t5.image);
           break;
         case ID_CADENA:
           t5 = jj_consume_token(ID_CADENA);
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
+                  jjtn000.jjtSetLastToken(getToken(0));
                  jjtn000.setName(t5.image);
           break;
         case BOOLEANO:
           t5 = jj_consume_token(BOOLEANO);
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
+                  jjtn000.jjtSetLastToken(getToken(0));
                  jjtn000.setName(t5.image);
           break;
         default:
@@ -1616,6 +1731,7 @@ void ExpresionL():{}
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1625,6 +1741,7 @@ void ExpresionL():{}
   ASTOperadores jjtn000 = new ASTOperadores(JJTOPERADORES);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
     try {
       if (jj_2_6(3)) {
         jj_consume_token(MAS);
@@ -1651,6 +1768,7 @@ void ExpresionL():{}
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1660,11 +1778,12 @@ void ExpresionL():{}
 ASTerror_skipto jjtn000 = new ASTerror_skipto(JJTERROR_SKIPTO);
 boolean jjtc000 = true;
 jjtree.openNodeScope(jjtn000);
+jjtn000.jjtSetFirstToken(getToken(1));
 try {Token t;
   sentencias_inco++;
   // consume tokens all the way up to a token of "kind" - use a do-while loop
   // rather than a while because the current token is the one immediately before
-  // the erroneous token (in our case the token immediately before what should
+  // the erroneous token in our case the token immediately before what should
   // have been "if"/"while".
   do {
     t = getNextToken();
@@ -1673,6 +1792,7 @@ try {Token t;
 } finally {
   if (jjtc000) {
     jjtree.closeNodeScope(jjtn000, true);
+    jjtn000.jjtSetLastToken(getToken(0));
   }
 }
   }
@@ -1681,18 +1801,21 @@ try {Token t;
  /*@bgen(jjtree) error */
         ASTerror jjtn000 = new ASTerror(JJTERROR);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);String errores = " ";
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));String errores = " ";
         Token t;
     try {
       t = jj_consume_token(UNKNOW);
   jjtree.closeNodeScope(jjtn000, true);
   jjtc000 = false;
+  jjtn000.jjtSetLastToken(getToken(0));
         errores = "Simbolo: " + t.image + " no reconocido en la l\u00c3\u00adnea "+String.valueOf(t.beginLine)+" columna "+String.valueOf(t.endColumn)+"\r\n";
         errormsg = errormsg+errores;
         sentencias_inco++;
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1701,15 +1824,18 @@ try {Token t;
                       /*@bgen(jjtree) errorFinlinea */
         ASTerrorFinlinea jjtn000 = new ASTerrorFinlinea(JJTERRORFINLINEA);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);sentencias_inco++;
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));sentencias_inco++;
         System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+(token.endColumn+1)+" falta ';'");
     try {
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
+          jjtn000.jjtSetLastToken(getToken(0));
 
     } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
+            jjtn000.jjtSetLastToken(getToken(0));
           }
     }
   }
@@ -1718,31 +1844,36 @@ try {Token t;
                         /*@bgen(jjtree) errorDOBLElinea */
         ASTerrorDOBLElinea jjtn000 = new ASTerrorDOBLElinea(JJTERRORDOBLELINEA);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);sentencias_inco++;
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));sentencias_inco++;
         System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+(token.endColumn+1)+" hay mas de un ';'  ");
     try {
       jj_consume_token(PuntoComa);
     } finally {
            if (jjtc000) {
              jjtree.closeNodeScope(jjtn000, true);
+             jjtn000.jjtSetLastToken(getToken(0));
            }
     }
   }
 
-//GRAMATICAS DE ERROR PARA LA ESTRUCTURA DEL CODIGO COATL
+//GRAMATICAS DE ERROR PARA LA ESTRUCTURA DEL CODIGO SNAKE
   final public void ErrorNoinicio() throws ParseException {
                       /*@bgen(jjtree) ErrorNoinicio */
         ASTErrorNoinicio jjtn000 = new ASTErrorNoinicio(JJTERRORNOINICIO);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);sentencias_inco++;
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));sentencias_inco++;
         System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+getToken(1).beginLine+" Columna: "+getToken(1).endColumn+": No hay palabra de arranque \"compilar_coatl\" ");
     try {
             jjtree.closeNodeScope(jjtn000, true);
             jjtc000 = false;
+            jjtn000.jjtSetLastToken(getToken(0));
 
     } finally {
             if (jjtc000) {
               jjtree.closeNodeScope(jjtn000, true);
+              jjtn000.jjtSetLastToken(getToken(0));
             }
     }
   }
@@ -1751,15 +1882,18 @@ try {Token t;
                          /*@bgen(jjtree) ErrorNoSepINICIO */
         ASTErrorNoSepINICIO jjtn000 = new ASTErrorNoSepINICIO(JJTERRORNOSEPINICIO);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+getToken(1).beginLine+" Columna: "+getToken(1).beginColumn+" No hay llave izquierda \"{\" ");
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+getToken(1).beginLine+" Columna: "+getToken(1).beginColumn+" No hay llave izquierda \"{\" ");
         sentencias_inco++;
     try {
             jjtree.closeNodeScope(jjtn000, true);
             jjtc000 = false;
+            jjtn000.jjtSetLastToken(getToken(0));
 
     } finally {
             if (jjtc000) {
               jjtree.closeNodeScope(jjtn000, true);
+              jjtn000.jjtSetLastToken(getToken(0));
             }
     }
   }
@@ -1768,15 +1902,18 @@ try {Token t;
                         /*@bgen(jjtree) ErrorNoSepFINAL */
         ASTErrorNoSepFINAL jjtn000 = new ASTErrorNoSepFINAL(JJTERRORNOSEPFINAL);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);sentencias_inco++;
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));sentencias_inco++;
         System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+token.beginColumn+": No hay llave derecha \"}\"");
     try {
             jjtree.closeNodeScope(jjtn000, true);
             jjtc000 = false;
+            jjtn000.jjtSetLastToken(getToken(0));
 
     } finally {
             if (jjtc000) {
               jjtree.closeNodeScope(jjtn000, true);
+              jjtn000.jjtSetLastToken(getToken(0));
             }
     }
   }
@@ -1785,15 +1922,18 @@ try {Token t;
                    /*@bgen(jjtree) ErrorNOFIN */
         ASTErrorNOFIN jjtn000 = new ASTErrorNOFIN(JJTERRORNOFIN);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);sentencias_inco++;
+        jjtree.openNodeScope(jjtn000);
+        jjtn000.jjtSetFirstToken(getToken(1));sentencias_inco++;
         System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+token.beginColumn+" No hay palabra de cierre\"ejecutar_coatl\"" );
     try {
             jjtree.closeNodeScope(jjtn000, true);
             jjtc000 = false;
+            jjtn000.jjtSetLastToken(getToken(0));
 
     } finally {
             if (jjtc000) {
               jjtree.closeNodeScope(jjtn000, true);
+              jjtn000.jjtSetLastToken(getToken(0));
             }
     }
   }
@@ -1840,13 +1980,39 @@ try {Token t;
     finally { jj_save(5, xla); }
   }
 
-  private boolean jj_3_6() {
+  private boolean jj_3R_15() {
+    if (jj_scan_token(BOOLEANO)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_14() {
+    if (jj_scan_token(ID_CADENA)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    if (jj_scan_token(FLOTANTE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_12() {
+    if (jj_scan_token(IDENTIFICADOR)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_9()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(40)) return true;
+    }
     if (jj_scan_token(MAS)) return true;
     return false;
   }
 
-  private boolean jj_3_3() {
-    if (jj_3R_10()) return true;
+  private boolean jj_3_6() {
+    if (jj_scan_token(MAS)) return true;
     return false;
   }
 
@@ -1858,6 +2024,11 @@ try {Token t;
   private boolean jj_3R_8() {
     if (jj_3R_11()) return true;
     if (jj_scan_token(IDENTIFICADOR)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_10()) return true;
     return false;
   }
 
@@ -1895,37 +2066,6 @@ try {Token t;
 
   private boolean jj_3R_9() {
     if (jj_3R_12()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_15() {
-    if (jj_scan_token(BOOLEANO)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    if (jj_scan_token(ID_CADENA)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_13() {
-    if (jj_scan_token(FLOTANTE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_12() {
-    if (jj_scan_token(IDENTIFICADOR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_9()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(40)) return true;
-    }
-    if (jj_scan_token(MAS)) return true;
     return false;
   }
 
@@ -2227,8 +2367,5 @@ try {Token t;
     int arg;
     JJCalls next;
   }
-
-    // {jjtThis.setImage(t.image);}
-
 
 }

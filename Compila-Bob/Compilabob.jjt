@@ -3,6 +3,7 @@ options {
 	JAVA_UNICODE_ESCAPE = true; 
 	KEEP_LINE_COLUMN = true; 
 	STATIC = false; 
+	TRACK_TOKENS = true;
 } 
 
 /*
@@ -50,12 +51,14 @@ PARSER_BEGIN(Compilabob)
 import java.util.*;
 import java.io.*;
 
+
 public class Compilabob {  
 
 	//********************
 	public static Hashtable ST  = new Hashtable();
 	String temp;
-	STC temp2;
+	Token varEXP;
+
 
 	String errormsg="",datos = "";
 	static  String expresion =" "; 
@@ -101,9 +104,20 @@ public class Compilabob {
 		ClaseSemantica.Crear_txt();
 		//System.out.println("EXPRESION ----- : "+expresion);
 	} 
-    // {jjtThis.setImage(t.image);}
+   
 	
-	
+ 
+
+
+private Token getNextToken(Token token) {
+    Token nextToken = token.next;
+    if (nextToken == null) {
+        nextToken = token.next;
+    }
+    return nextToken;
+}
+
+
 }   
 
 PARSER_END(Compilabob)   
@@ -329,6 +343,7 @@ void Condi_limite():{}{
 //----------------------------------------------------------------------------------------------------------------------
 void Declaracion():
 {   
+	
 	//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
 	int td;
 }
@@ -360,6 +375,8 @@ void Declaracion():
 	//**ANALIZADOR SEMANTICO**
 	//Esta variable es para el proceso del analizador semantico 
 	var = t;
+	varEXP = var;
+
 
    //******************COMENTARIOS PARA el analizador SEMANTICO*********************
 	//Manda a llamar la clase semantica y su metodo para comprobar esto 
@@ -378,13 +395,19 @@ void Declaracion():
 		
 		ClaseSemantica.InsertarSimbolo(var,td);
 	}
+
   }
 //****ARBOL SINTACTICO****
 //No es importante mostrar en el arbol los lexemas : asignacion (":") ni el puntocoma
 // ya que solo son parte de la sintaxis general y no son un bloque muy importante para el peldaño
 //en los arboles sintacticos son importantes los operadores, las variables, los valores de las variables y las reserved keys
 // esto se pueden pasar de largo
-  ((<ASIGNACION>  AsignacionD())|{}) (<PuntoComa> |errorFinlinea())
+
+
+  ((<ASIGNACION>  AsignacionD(){
+
+	
+  })|{}) (<PuntoComa> |errorFinlinea())
 } 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -392,9 +415,20 @@ void Declaracion():
 // ASIGNACION DE VALORES DESPUES DE UNA DECLARACION
 //ESTRUCTURA BASICA DE LA GRAMATICA
 //esto es la base 
-void AsignacionD():{} 
+void AsignacionD():{
+		Token t2;
+	} 
 {   
-	( LEER()  | Expresion() ) 
+	
+
+	( LEER()  | Expresion() {
+	t2 = token;
+
+	if(!(ClaseSemantica.checkAsing(varEXP,t2).equals(" "))){
+			errormsg = errormsg+ClaseSemantica.checkAsing(var,t2);
+			sentencias_inco++;
+		}
+	}) 
 } 
 
 
@@ -417,7 +451,7 @@ void Asignacion():
 		//***ANALIZADOR SEMANTICO***
 
 		var = t;
-
+		
 
 	// ***NOTA*** QUE SE LLAMA AL MISMO METODO PARA COMPROBAR 2 TIPOS DIFERENTES DE ERRORES
 		//Aqui se intenta buscar algo parecido: Se determina si la variable existe o ha sido declarada
@@ -602,7 +636,7 @@ void error_skipto(int puntocoma, int fincode, int finfile) {
   sentencias_inco++;
   // consume tokens all the way up to a token of "kind" - use a do-while loop
   // rather than a while because the current token is the one immediately before
-  // the erroneous token (in our case the token immediately before what should
+  // the erroneous token in our case the token immediately before what should
   // have been "if"/"while".
   do {
     t = getNextToken();
@@ -642,7 +676,7 @@ void errorDOBLElinea():{
 }
 
 
-//GRAMATICAS DE ERROR PARA LA ESTRUCTURA DEL CODIGO COATL
+//GRAMATICAS DE ERROR PARA LA ESTRUCTURA DEL CODIGO SNAKE
 
 void ErrorNoinicio():{
 	sentencias_inco++;
@@ -662,7 +696,7 @@ void ErrorNoSepINICIO():{
 void ErrorNoSepFINAL():{
 	sentencias_inco++;
 	System.out.println("Error sint"+"\u00e1"+"ctico en la linea: "+token.beginLine+" Columna: "+token.beginColumn+": No hay llave derecha \"}\"");
-}{
+ } {
 	 
 	  {} 
 }

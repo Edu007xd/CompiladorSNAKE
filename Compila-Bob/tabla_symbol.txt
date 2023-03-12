@@ -1,4 +1,6 @@
 cadena=36
+num=36
+valor3=34
 resultado=34
-valor2=34
+valor2=36
 valor1=34
