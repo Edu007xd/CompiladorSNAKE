@@ -24,7 +24,9 @@ public class ClaseSemantica{
 
     public static void InsertarSimbolo(Token identificador, int tp)
 	{
-		//En este metodo se agrega a la tabla de tokens el identificador que esta siendo declarado junto con su tipo de dato
+		//En este metodo se agrega a la tabla de tokens el identificador(lexema para el nombre de las variable)
+		//que esta siendo declarado junto con su tipo de dato. (el tipo de dato es su id dentro de la tabla de lexemas)
+		//
 		tabla.put(identificador.image, tp);
 	 }
 
@@ -35,6 +37,9 @@ public class ClaseSemantica{
 		 entero = intComp
 		 decimal = decComp
 		 cadena = strComp
+
+		 Esto nos sirve para comparar luego si un dato declarado (ej C_ cadenadetexto) es compatible con el valor al que
+		 // se le esta asignando (que sea una "cadena de texto" y no un numero o true/false booleano )
 		*/
 		intComp.add(34);
 		intComp.add(38);
@@ -57,25 +62,47 @@ public class ClaseSemantica{
 		|<NUMERO: (["0"-"9"])+>//38
 		|<NUMDECIMAL: (["0"-"9"])+ "." (["0"-"9"])+ | (["0"-"9"])+ "." | "." (["0"-"9"])+>//39
 		|<CADENAS: ("\""(~["\"","#","\n","\r","#","#","\r","\n"])*"\"")>//40
+		|<EST_LOGIC:("falso"|"verdad")>//41
+}   
+
+TOKEN: 
+{
+		<IDENTIFICADOR:["A"-"Z","a"-"z"](["A"-"Z","a"-"z","0"-"9"])*>//42
+
+}
+
+TOKEN: 
+{ 
+		<UNKNOW : ~[]> //43
+}
 		 */
 		
 	}
 
+	// **** ESTE METODO SOLO COMPRUEBA SI UNA ASIGNACION SE ESTA EJECUTANDO CON VALORES CONGRUENTES
+	//		NO HACE COMPROBACIONES DE SI EL TOKEN YA HA SIDO DECLARADO O NO, DE ESO SE ENCARGA EL METODO DE ABAJO CheckVariable
+
+								// nombre variable    valor de la variable (entero,decimal,cadena de texto)
 	public static String checkAsing(Token TokenIzq, Token TokenAsig)
 	{
 		//variables en las cuales se almacenara el tipo de dato del identificador 
 		//y de las asignaciones (ejemplo: n1(tipoIdent1) = 2(tipoIdent2) + 3(tipoIdent2))
 		int tipoIdent1;
 		int tipoIdent2;		
-							/* De la tabla obtenemos el tipo de dato del identificador  
+							/* De la tabla de simbolos obtenemos el tipo de dato del identificador  
 								asi como, si el token enviado es diferente a algun tipo que no se declara como los numeros(32), los decimales(35),
 								caracteres(38) y cadenas(31)
-								entonces tipoIdent1 = tipo_de_dato, ya que TokenAsig es un dato*/
+								entonces tipoIdent1 = tipo_de_dato, ya que TokenAsig es un objeto tipo token*/
+
+		//Aqui estamos comprobando si el token declarado no es un valor, sino el nombre de una variable
 		if(TokenIzq.kind != 38 && TokenIzq.kind != 39 && TokenIzq.kind != 40)		
 		{
 			try 
-			{
-				//Si el TokenIzq.image existe dentro de la tabla de tokens, entonces tipoIdent1 toma el tipo de dato con el que TokenIzq.image fue declarado
+			{	//confirmamos que el token sea de un <IDENTIFICADOR>
+				// Y ahora comprobamos que ya haya sido declarada en la tabla de simbolos
+
+				//Si el TokenIzq.image existe dentro de la tabla de tokens,
+				// entonces tipoIdent1 toma el tipo de dato con el que TokenIzq.image fue declarado
 				tipoIdent1 = (Integer)tabla.get(TokenIzq.image);	
 			}
 			catch(Exception e)
@@ -88,25 +115,29 @@ public class ClaseSemantica{
 			}
 		}
 		else 		
-			tipoIdent1 = 0;
+			tipoIdent1 = 0; //Si el token no es un identificador, entonces existe un error de sintaxis en el codigo
 			
 		//TokenAsig.kind != 48 && TokenAsig.kind != 50 && TokenAsig.kind != 51 && TokenAsig.kind != 52
+		//Se verifica si el token que esta del lado derecho de la asignacion (a = b;) es un identificador
 		if(TokenAsig.kind == 42)	
 		{
 			/*Si el tipo de dato que se esta asignando, es algun identificador(kind == 39) 
-			se obtiene su tipo de la tabla de tokens para poder hacer las comparaciones*/
+			se obtiene su tipo de la tabla de tokens para poder hacer las comparaciones
+			PARA ESTO, LA VARIABLE YA DEBIO HABER SIDO DECLARADA
+			*/
 			try
 			{
 				tipoIdent2 = (Integer)tabla.get(TokenAsig.image);
-			}
+			} // SI NO SE ENCUENTRA, NO HA SIDO DECLARADA Y ES MANEJADA INDEPENDIENTEMENTE POR EL METODO DE ABAJO
 			catch(Exception e)
 			{
-				//si el identificador no existe manda el error
+				//si el identificador no existe manda el string de error
 				return " ";
 			}
 		}
 				//Si el dato es entero(35) o decimal(36) o cadena(31)
-				//tipoIdent2 = tipo_del_dato
+				// a la variable para hacer comparaciones, se le asigna su id de tipo de dato
+				//tipoIdent2 = id_tipo_del_dato dentro de la lista de LEXEMAS
 		else if(TokenAsig.kind == 38 || TokenAsig.kind == 39 || TokenAsig.kind == 40)
 			tipoIdent2 = TokenAsig.kind;
 		else //Si no, se inicializa en algun valor "sin significado(con respecto a los tokens)", para que la variable este inicializada y no marque error al comparar
@@ -137,29 +168,45 @@ public class ClaseSemantica{
 			else
 				return "Error semantico en la linea "+TokenAsig.beginLine+", columna "+TokenAsig.beginColumn+ " no se puede convertir " + TokenAsig.image + " a Cadena \r\n";
 		}else
-		{
+		{ //SI UNA DE LAS DOS VARIABLES tipoIdent es un cero, manda el string de error, debido a que no han sido declaradas 
 			return " ";
 		}
 	}	  
 
 
+
+
 	/*Metodo que verifica si un identificador YA HA sido declarado, 
 	ej cuando se declaran las asignaciones: E_ numero1: 4, C_ cadena1 : "este es un string",i++, i--)
+
+	//Este metodo es llamado desde el compilador desde dos gramaticas
+	// DECLARACION() y ASIGNACION() 
 	*/ 
 		public static String checkVariable(Token checkTok)
 		{
 			try
 			{
-				//Intenta obtener el token a verificar(checkTok) de la tabla de los tokens
-				//Verifica si ya fue declarado
+				//Intenta obtener el token a verificar(Token enviado desde la gramatica declaracion) 
+				// y verifica en la tabla hash los tokens ya existentes
+				//Verifica si ya fue declarado con la image del token
+				
+				//Aqui hay de dos, por eso existe un try-catch.
+				// Si al verificar dentro de la tabla no existe dicha variable
+				//entonces enviara un string explicando el error en el catch
+				// pero si no hay error, entonces regresa un string vacio porque si existe la variable en la tabla de simbolos
 				int tipoIdent1 = (Integer)tabla.get(checkTok.image);
 				return "";
+
 			}// SI NO SE ENCONTRO EL TOKEN
+			//Desde la perspectiva de la gramatica DECLARACION(), no hay problema, solo lo inserta a la tabla de simbolos en la clase del compilador.
+			//Pero desde la perspectiva de la gramatica ASIGNACION(), entonces si hay problema
+			//	debido a que no existe una variable a la cual asignarle y relacionarle datos
 			catch(Exception e)
 			{				//Si no lo puede obtener, manda el error
 				//								    Linea donde esta el token		  Columna donde esta el token	Imagen del token
 				return "Error semantico en la linea " +checkTok.beginLine +", columna  "+checkTok.beginColumn +", "+ checkTok.image + " no ha sido declarado \r\n";
-			}
+			}// La gramatica DECLARACION() no hace nada con este string
+			// La gramatica ASIGNACION() la guarda con los otros errores
 		}
 	
 
@@ -173,7 +220,7 @@ public class ClaseSemantica{
                 writer.newLine();
             }
             writer.close();
-            System.out.println("Se ha creado la tabla de simbolos exitosamente");
+            System.out.println("Se ha creado la tabla de simbolos exitosamente dentro del directorio");
         } catch (IOException e) {
             System.err.println("Ha ocurrido un error durante la creacion del archivo: " + e.getMessage());
         }

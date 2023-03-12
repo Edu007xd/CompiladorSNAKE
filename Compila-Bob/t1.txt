@@ -1,7 +1,9 @@
 compilar_coatl{
 
-	E_ valor1:5;
-	valor2 : 100;
+	E_ valor1:3 ;
+	valor1:"cadena" ;
+
+	valor2 : 100  ;
 	C_ cadena: "lolXD";
 	repito hasta que(n,var1):{
 		 num : 3-(45+1)*5;

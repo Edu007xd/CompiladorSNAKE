@@ -48,7 +48,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
                 }
                 System.out.println("PILA SEMANTICA CREADA EXITOSAMENTE");
                 System.out.println("FINAL PRINT\n" +"Sentencias incorrectas encontradas: "+compilador.sentencias_inco);
-                System.out.println("----- Tabla de simbolos ----\n"+ ClaseSemantica.tabla);
+                //System.out.println("----- Tabla de simbolos ----\n"+ ClaseSemantica.tabla);
+                //System.out.println("Tabla de simbolos creada dentro del directorio" );
                 ClaseSemantica.Crear_txt();
                 //System.out.println("EXPRESION ----- : "+expresion);
         }
@@ -791,9 +792,7 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
  /*@bgen(jjtree) Declaracion */
         ASTDeclaracion jjtn000 = new ASTDeclaracion(JJTDECLARACION);
         boolean jjtc000 = true;
-        jjtree.openNodeScope(jjtn000);//ANALIZADOR SEMANTICO, AUN NO
-//*********************************
-        //Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
+        jjtree.openNodeScope(jjtn000);//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
         int td;
     try {
       Variable_dato();
@@ -806,30 +805,33 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
         td = token.kind;
       //ARBOL SINTACTICO
       //El token identificado (objeto tipo token), es almacenado dentro de t. Ya tenemos los datos dentro del lexema
-      // se asigna el nombre de la variable (el lexema, en este caso <IDENTIFICADOR>) 
-      //dentro de un objeto Token para ser impresO en el árbol en la siguiente linea 
+      // se asigna el nombre de la variable (el lexema <IDENTIFICADOR>) dentro de un objeto Token 
+      //para ser impresO en el árbol en la siguiente linea 
         t = jj_consume_token(IDENTIFICADOR);
-        // Aqui el string del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
+        // Aqui el image del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
    // la gramatica mas el prefijo 'AST': ASTDeclaracion.java <---- Aqui se crearan pequeños metodos para realizar la asignación
    //Es importante crear estos metodos porque, por si mismo no existe el metodo .setName(), este debe ser creado manualmente
         jjtn000.setName(t.image);
 
-        //Esta variable es para el proceso del analizador semantico, aun no es importante
+        //**ANALIZADOR SEMANTICO**
+        //Esta variable es para el proceso del analizador semantico 
         var = t;
 
-   //******************COMENTARIOS PARA el analizador SEMANTICo, AÚN NO ES IMPORTANTE*********************
+   //******************COMENTARIOS PARA el analizador SEMANTICO*********************
         //Manda a llamar la clase semantica y su metodo para comprobar esto 
-        //Retornara un string vacio o un null
+        //Retornara un string vacio si la variable ya ha sido declarada
         if(ClaseSemantica.checkVariable(var).equals("")){
 
-                //Si se retorna un string vacio entonces ya ha sido declarada la variable
+                //Si se retorna un string vacio entonces ya ha sido declarada la variable. Y ese es un error semantico
                 errormsg = errormsg+"Error semantico en la linea " +var.beginLine +", columna "+var.beginColumn +", la variable "+ var.image + " ya  ha sido declarada \r\n";
 
                 //Se suma la cantidad de sentencias incorrectas
                 sentencias_inco++;
         }else{
 
-                //Si no existe error alguno, entonces se insertan en la tabla
+                //Si retorna el string con el error, no hace nada con ese string,
+                // solo guarda la nueva variable en la tabla de simbolos
+
                 ClaseSemantica.InsertarSimbolo(var,td);
         }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -930,20 +932,29 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
         // t2 es usado para el analizador semantico
         Token t, t2;
     try {
-      //Asignamos el valor del identificador de la variable en la clase ASTAsignacion
+      // ***ARBOL SINTACTICO****
+              //Asignamos el valor del identificador de la variable en la clase ASTAsignacion
               //para que el arbol sea mostrado de la siguiente forma :
               //		 "Asignacion para el identificador: " + this.name
               t = jj_consume_token(IDENTIFICADOR);
                 jjtn000.setName(t.image);
 
                 //Ya lo que sigue despues es para el analizador semantico
-                //Apartado del analizador semantico
+                //***ANALIZADOR SEMANTICO***
+
                 var = t;
 
+
+        // ***NOTA*** QUE SE LLAMA AL MISMO METODO PARA COMPROBAR 2 TIPOS DIFERENTES DE ERRORES
                 //Aqui se intenta buscar algo parecido: Se determina si la variable existe o ha sido declarada
                 // Si no existe, entonces retornara un mensaje de error anunciando eso
-                //Y ese mensaje se sumara a todos los mensajes de error existentes
+        //AQUI comprueba si retorna un string vacio, si es vacio entonces la variable existe dentro de la tabla de simbolos
+        // Y si esta dentro de la tabla de la tabla, no entra al if
         if(!(ClaseSemantica.checkVariable(var).equals(""))){
+
+        //Pero si entra al if, entonces significa que recibio un error. Y le retorna un string detallando el error
+        // en el string se menciona la linea y columna del token no declarado.
+        //Este error es sumado a la lista
                 errormsg = errormsg+ClaseSemantica.checkVariable(var);
                 sentencias_inco++;
 
@@ -970,19 +981,24 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants, Comp
       }
                                   jjtree.closeNodeScope(jjtn000, true);
                                   jjtc000 = false;
-                /*if(t2.kind != LEER){
-			Expresiones.Convierte(expresion);
-		} */
-
-
+                /*
+		ERROR DE ASIGNACION DE DATOS QUE NO SON DEL MISMO TIPO
+		token es el objeto usado internamente por el compilador con el que recorre todo el codigo leido.
+		En este momento token esta leyendo un lexema que puede ser del tipo int, float, boolean, o string.
+		 
+		Por lo tanto se asigna a una variable que no este en uso por el compilador, como t2, objeto tipo Token que
+		hemos declarado con anterioridad.
+		*/
                 t2 = token;
+
                 //Se verifica que las declaraciones sean congruentes 
-                //Se verifica que el tipo de variable y su dato sean del mismo tipo
+                //Se envian dos tokens, uno conteniendo el nombre de la variable, y otro conteniendo el valor que se le esta asignando
+                //Este if comprueba que no se retorne un " ", porque si se retorna un espacio de string, entonces hay error semantico
+                //se intentan hacer asignaciones con valores de diferente tipo 
                 if(!(ClaseSemantica.checkAsing(var,t2).equals(" "))){
                         errormsg = errormsg+ClaseSemantica.checkAsing(var,t2);
                         sentencias_inco++;
                 }
-                expresion = " ";
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1824,8 +1840,18 @@ try {Token t;
     finally { jj_save(5, xla); }
   }
 
+  private boolean jj_3_6() {
+    if (jj_scan_token(MAS)) return true;
+    return false;
+  }
+
   private boolean jj_3_3() {
     if (jj_3R_10()) return true;
+    return false;
+  }
+
+  private boolean jj_3_4() {
+    if (jj_scan_token(MENOR)) return true;
     return false;
   }
 
@@ -1856,6 +1882,22 @@ try {Token t;
     return false;
   }
 
+  private boolean jj_3_1() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_10() {
+    if (jj_scan_token(ELSE)) return true;
+    if (jj_scan_token(SepIzq)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_9() {
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
   private boolean jj_3R_15() {
     if (jj_scan_token(BOOLEANO)) return true;
     return false;
@@ -1876,27 +1918,6 @@ try {Token t;
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_10() {
-    if (jj_scan_token(ELSE)) return true;
-    if (jj_scan_token(SepIzq)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_9() {
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
-  private boolean jj_3_6() {
-    if (jj_scan_token(MAS)) return true;
-    return false;
-  }
-
   private boolean jj_3_2() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1905,11 +1926,6 @@ try {Token t;
     if (jj_scan_token(40)) return true;
     }
     if (jj_scan_token(MAS)) return true;
-    return false;
-  }
-
-  private boolean jj_3_4() {
-    if (jj_scan_token(MENOR)) return true;
     return false;
   }
 

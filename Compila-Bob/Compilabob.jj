@@ -100,7 +100,8 @@ public class Compilabob/*@bgen(jjtree)*/implements CompilabobTreeConstants/*@ege
 		}
 		System.out.println("PILA SEMANTICA CREADA EXITOSAMENTE");
 		System.out.println("FINAL PRINT\n" +"Sentencias incorrectas encontradas: "+compilador.sentencias_inco);
-		System.out.println("----- Tabla de simbolos ----\n"+ ClaseSemantica.tabla);
+		//System.out.println("----- Tabla de simbolos ----\n"+ ClaseSemantica.tabla);
+		//System.out.println("Tabla de simbolos creada dentro del directorio" );
 		ClaseSemantica.Crear_txt();
 		//System.out.println("EXPRESION ----- : "+expresion);
 	} 
@@ -714,16 +715,15 @@ void Declaracion():
         ASTDeclaracion jjtn000 = new ASTDeclaracion(JJTDECLARACION);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
-/*@egen*/   //ANALIZADOR SEMANTICO, AUN NO
-//*********************************
+/*@egen*/   
 	//Este int almacena el id del token. Su identificador dentro de la tabla de lexemas
 	int td;
 }
 {/*@bgen(jjtree) Declaracion */
   try {
-/*@egen*/ 	//COMENTARIOS PARA EL ARBOL SINTACTICO
+/*@egen*/ 	//
 	//Cada que el analizador encuentre una SENTENCIA tipo declaraci\u00c3\u00b3n, va a tomar el token IDENTIFICADOR
-	// Y con ello datos como su id dentro de la tabla de simbolos o su valor string ej. num1, nombre_usuario
+	// Y con ello datos como su id e image seran ingresados dentro de la tabla de simbolos  
   Variable_dato(){
 
 	//Se declara la variable t para manejar los objetos token (lexemas)
@@ -736,36 +736,39 @@ void Declaracion():
   } 
 //ARBOL SINTACTICO
 //El token identificado (objeto tipo token), es almacenado dentro de t. Ya tenemos los datos dentro del lexema
-// se asigna el nombre de la variable (el lexema, en este caso <IDENTIFICADOR>) 
-//dentro de un objeto Token para ser impresO en el \u00c3\u00a1rbol en la siguiente linea 
+// se asigna el nombre de la variable (el lexema <IDENTIFICADOR>) dentro de un objeto Token 
+//para ser impresO en el \u00c3\u00a1rbol en la siguiente linea 
   t = <IDENTIFICADOR> 
    {
 	
-	// Aqui el string del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
+	// Aqui el image del identificador (v1, num, i, etc.) es guardado en una clase con el mismo nombre de
    // la gramatica mas el prefijo 'AST': ASTDeclaracion.java <---- Aqui se crearan peque\u00c3\u00b1os metodos para realizar la asignaci\u00c3\u00b3n
    //Es importante crear estos metodos porque, por si mismo no existe el metodo .setName(), este debe ser creado manualmente
 	jjtn000.setName(t.image);
 	
-	//Esta variable es para el proceso del analizador semantico, aun no es importante
+	//**ANALIZADOR SEMANTICO**
+	//Esta variable es para el proceso del analizador semantico 
 	var = t;
 
-   //******************COMENTARIOS PARA el analizador SEMANTICo, A\u00c3\u0161N NO ES IMPORTANTE*********************
+   //******************COMENTARIOS PARA el analizador SEMANTICO*********************
 	//Manda a llamar la clase semantica y su metodo para comprobar esto 
-	//Retornara un string vacio o un null
+	//Retornara un string vacio si la variable ya ha sido declarada
 	if(ClaseSemantica.checkVariable(var).equals("")){
 
-		//Si se retorna un string vacio entonces ya ha sido declarada la variable
+		//Si se retorna un string vacio entonces ya ha sido declarada la variable. Y ese es un error semantico
 		errormsg = errormsg+"Error semantico en la linea " +var.beginLine +", columna "+var.beginColumn +", la variable "+ var.image + " ya  ha sido declarada \r\n";
 		
 		//Se suma la cantidad de sentencias incorrectas
 		sentencias_inco++;
 	}else{
 
-		//Si no existe error alguno, entonces se insertan en la tabla
+		//Si retorna el string con el error, no hace nada con ese string,
+		// solo guarda la nueva variable en la tabla de simbolos
+		
 		ClaseSemantica.InsertarSimbolo(var,td);
 	}
   }
-
+//****ARBOL SINTACTICO****
 //No es importante mostrar en el arbol los lexemas : asignacion (":") ni el puntocoma
 // ya que solo son parte de la sintaxis general y no son un bloque muy importante para el pelda\u00c3\u00b1o
 //en los arboles sintacticos son importantes los operadores, las variables, los valores de las variables y las reserved keys
@@ -844,7 +847,7 @@ void Asignacion():
 }
 {/*@bgen(jjtree) Asignacion */
         try {
-/*@egen*/  
+/*@egen*/  // ***ARBOL SINTACTICO****
 	//Asignamos el valor del identificador de la variable en la clase ASTAsignacion
 	//para que el arbol sea mostrado de la siguiente forma :
 	//		 "Asignacion para el identificador: " + this.name
@@ -852,13 +855,21 @@ void Asignacion():
 		jjtn000.setName(t.image);
 		
 		//Ya lo que sigue despues es para el analizador semantico
-		//Apartado del analizador semantico
+		//***ANALIZADOR SEMANTICO***
+
 		var = t;
 
+
+	// ***NOTA*** QUE SE LLAMA AL MISMO METODO PARA COMPROBAR 2 TIPOS DIFERENTES DE ERRORES
 		//Aqui se intenta buscar algo parecido: Se determina si la variable existe o ha sido declarada
 		// Si no existe, entonces retornara un mensaje de error anunciando eso
-		//Y ese mensaje se sumara a todos los mensajes de error existentes
+	//AQUI comprueba si retorna un string vacio, si es vacio entonces la variable existe dentro de la tabla de simbolos
+	// Y si esta dentro de la tabla de la tabla, no entra al if
 	if(!(ClaseSemantica.checkVariable(var).equals(""))){
+
+	//Pero si entra al if, entonces significa que recibio un error. Y le retorna un string detallando el error
+	// en el string se menciona la linea y columna del token no declarado.
+	//Este error es sumado a la lista
 		errormsg = errormsg+ClaseSemantica.checkVariable(var);
 		sentencias_inco++;
 
@@ -871,19 +882,26 @@ void Asignacion():
                                 }
 /*@egen*/ {
 
-		/*if(t2.kind != LEER){
-			Expresiones.Convierte(expresion);
-		} */
 
-
+		/*
+		ERROR DE ASIGNACION DE DATOS QUE NO SON DEL MISMO TIPO
+		token es el objeto usado internamente por el compilador con el que recorre todo el codigo leido.
+		En este momento token esta leyendo un lexema que puede ser del tipo int, float, boolean, o string.
+		 
+		Por lo tanto se asigna a una variable que no este en uso por el compilador, como t2, objeto tipo Token que
+		hemos declarado con anterioridad.
+		*/ 
 		t2 = token;
+		 
 		//Se verifica que las declaraciones sean congruentes 
-		//Se verifica que el tipo de variable y su dato sean del mismo tipo
+		//Se envian dos tokens, uno conteniendo el nombre de la variable, y otro conteniendo el valor que se le esta asignando
+		//Este if comprueba que no se retorne un " ", porque si se retorna un espacio de string, entonces hay error semantico
+		//se intentan hacer asignaciones con valores de diferente tipo 
 		if(!(ClaseSemantica.checkAsing(var,t2).equals(" "))){
 			errormsg = errormsg+ClaseSemantica.checkAsing(var,t2);
 			sentencias_inco++;
 		}
-		expresion = " ";
+		 
 	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
